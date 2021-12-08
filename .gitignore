@@ -4,4 +4,3 @@ lex.yy.c
 y.output
 y.tab.c
 y.tab.h
-testes

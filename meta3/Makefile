@@ -6,7 +6,7 @@ exe: ${FILENAME1} ${FILENAME2}
 	lex ${FILENAME1}
 	yacc -y -d -t -v ${FILENAME2}
 	cc -o ${EXE} y.tab.c lex.yy.c struct.c
-	./${EXE} -t < testes/error_unbalanced_par.dgo 
+	./${EXE} -t < testes/errors.dgo 
 clear:
 	rm -rf *${EXE}
 	rm -f ${EXE}.zip
