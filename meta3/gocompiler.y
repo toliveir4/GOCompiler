@@ -1,9 +1,11 @@
-/*META 2 - COMPILADORES 2021-2022*/
+/*META 3 - COMPILADORES 2021-2022*/
 /*MARCO PAIS Nº 2019218981*/
 /*TIAGO OLIVEIRA Nº 2019219068*/
 
 %{
     #include "struct.h"
+    #include "semantic_analysis.h"
+
     int yylex();
     int yyparse();
     void yyerror(char* msg);
@@ -22,6 +24,10 @@
     char *valor;
     no_ast *no;
 }
+
+%destructor {} Program
+%destructor { if($$) freeAST($$);} <no>
+%destructor { free($$); } IDaux INTLIT STRLIT REALLIT
 
 /* tokens */
 %token SEMICOLON COMMA 

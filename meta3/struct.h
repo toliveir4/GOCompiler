@@ -1,4 +1,4 @@
-/*META 2 - COMPILADORES 2021-2022*/
+/*META 3 - COMPILADORES 2021-2022*/
 /*MARCO PAIS Nº 2019218981*/
 /*TIAGO OLIVEIRA Nº 2019219068*/
 
@@ -24,5 +24,6 @@ no_ast *novoNo(char* valor,char* tipo);
 void addirmao(no_ast* no, no_ast * novoirmao);
 void addfilho(no_ast *no, no_ast *filho);
 void printAST(no_ast *no, int nivel);
+void freeAST(no_ast *no);
 
 #endif //!STRUCT_H

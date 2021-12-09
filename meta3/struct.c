@@ -1,3 +1,7 @@
+/*META 3 - COMPILADORES 2021-2022*/
+/*MARCO PAIS Nº 2019218981*/
+/*TIAGO OLIVEIRA Nº 2019219068*/
+
 #include "struct.h"
 
 no_ast *novoNo(char *tipo, char *valor)
@@ -64,4 +68,16 @@ void printAST(no_ast *no, int nivel)
                 printAST(no->irmao, nivel);
         }   
     }
+}
+
+void freeAST(no_ast *no)
+{
+    if (no == NULL) return;
+    
+    freeAST(no->filho);
+    freeAST(no->irmao);
+
+    free(no->tipo);
+    free(no->valor);
+    free(no);
 }
