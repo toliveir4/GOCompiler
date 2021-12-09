@@ -1,26 +1,26 @@
-==828== Memcheck, a memory error detector
-==828== Copyright (C) 2002-2017, and GNU GPL'd, by Julian Seward et al.
-==828== Using Valgrind-3.15.0 and LibVEX; rerun with -h for copyright info
-==828== Command: ./gocompiler -t
-==828== Parent PID: 827
-==828== 
-==828== 
-==828== HEAP SUMMARY:
-==828==     in use at exit: 4 bytes in 1 blocks
-==828==   total heap usage: 430 allocs, 429 frees, 26,546 bytes allocated
-==828== 
-==828== 4 bytes in 1 blocks are still reachable in loss record 1 of 1
-==828==    at 0x483B7F3: malloc (in /usr/lib/x86_64-linux-gnu/valgrind/vgpreload_memcheck-amd64-linux.so)
-==828==    by 0x48F550E: strdup (strdup.c:42)
-==828==    by 0x405FBF: yylex (gocompiler.l:111)
-==828==    by 0x401643: yyparse (y.tab.c:1645)
-==828==    by 0x407AB5: main (gocompiler.l:128)
-==828== 
-==828== LEAK SUMMARY:
-==828==    definitely lost: 0 bytes in 0 blocks
-==828==    indirectly lost: 0 bytes in 0 blocks
-==828==      possibly lost: 0 bytes in 0 blocks
-==828==    still reachable: 4 bytes in 1 blocks
-==828==         suppressed: 0 bytes in 0 blocks
-==828== 
-==828== ERROR SUMMARY: 0 errors from 0 contexts (suppressed: 0 from 0)
+==85== Memcheck, a memory error detector
+==85== Copyright (C) 2002-2017, and GNU GPL'd, by Julian Seward et al.
+==85== Using Valgrind-3.15.0 and LibVEX; rerun with -h for copyright info
+==85== Command: ./gocompiler -t
+==85== Parent PID: 84
+==85== 
+==85== 
+==85== HEAP SUMMARY:
+==85==     in use at exit: 4 bytes in 1 blocks
+==85==   total heap usage: 430 allocs, 429 frees, 26,546 bytes allocated
+==85== 
+==85== 4 bytes in 1 blocks are still reachable in loss record 1 of 1
+==85==    at 0x483B7F3: malloc (in /usr/lib/x86_64-linux-gnu/valgrind/vgpreload_memcheck-amd64-linux.so)
+==85==    by 0x48F550E: strdup (strdup.c:42)
+==85==    by 0x405FBF: yylex (gocompiler.l:111)
+==85==    by 0x401643: yyparse (y.tab.c:1645)
+==85==    by 0x407AB5: main (gocompiler.l:128)
+==85== 
+==85== LEAK SUMMARY:
+==85==    definitely lost: 0 bytes in 0 blocks
+==85==    indirectly lost: 0 bytes in 0 blocks
+==85==      possibly lost: 0 bytes in 0 blocks
+==85==    still reachable: 4 bytes in 1 blocks
+==85==         suppressed: 0 bytes in 0 blocks
+==85== 
+==85== ERROR SUMMARY: 0 errors from 0 contexts (suppressed: 0 from 0)
