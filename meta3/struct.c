@@ -4,11 +4,14 @@
 
 #include "struct.h"
 
-no_ast *novoNo(char *tipo, char *valor)
+no_ast *novoNo(char *tipo, char *valor, int line, int column)
 {
     no_ast *no = (no_ast *) malloc(sizeof(no_ast));
     no->tipo = (char *) strdup(tipo);
     no->filho = no->irmao = NULL;
+    no->nota = NULL;
+    no->line = line;
+    no->column = column;
 
     //Caso não tenha um valor associado (p.ex.: ID(<valor>))
     if (valor == NULL)
@@ -52,10 +55,17 @@ void printAST(no_ast *no, int nivel)
                 printf("..");
 
             if (no->valor != NULL)
-                printf("%s(%s)\n", no->tipo, no->valor);
+                printf("%s(%s)", no->tipo, no->valor);
             else
-                printf("%s\n", no->tipo);
+                printf("%s", no->tipo);
 
+            if (no->nota != NULL){
+                if(strcmp(no->nota,"none") != 0)    
+                    printf(" - %s", no->nota);
+            }
+
+            printf("\n");
+            
             if (no->filho != NULL)
                 printAST(no->filho, nivel + 1);
             if (no->irmao != NULL)

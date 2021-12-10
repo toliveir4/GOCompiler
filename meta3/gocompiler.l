@@ -7,6 +7,7 @@
     #include <stdio.h>
     #include <string.h>
     #include "struct.h"
+    #include "semantics.h"
     #include "y.tab.h"
 
     #define LINE line++, column = 1;
@@ -128,11 +129,24 @@ int main(int argc, char* argv[])
             yyparse();
             if (!syntaxError) printAST(root,0);
         }
-    } else if (argc == 1) {
-        // Se não forem introduzidas flags a "-t" é escolhida
-        _t = 1;
-        yyparse();
+        // Flag -s
+        if (strcmp(argv[1], "-s") == 0) {
+            _t = 1;
+            yyparse();
+            if (!syntaxError){
+                criaTabelas(root);
+                printTabelas();
+                printAST(root,0);
+            }
+        }
+        // No flags
+        else if (argc == 1) {
+            // Se não forem introduzidas flags a "-t" é escolhida
+            _t = 1;
+            yyparse();
+        }
     }
+
     freeAST(root);
     yylex_destroy();    // liberta a memoria alocada pelo scanner interno do lex
     return 0;

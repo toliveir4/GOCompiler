@@ -4,7 +4,7 @@
 
 %{
     #include "struct.h"
-    #include "semantic_analysis.h"
+    #include "semantics.h"
 
     int yylex();
     int yyparse();
@@ -69,7 +69,7 @@
 %nonassoc ELSE IF
 
 %%
-Program: PACKAGE ID SEMICOLON Declarations                      {root=novoNo("Program",NULL); $$=root; addfilho($$, $4);}
+Program: PACKAGE ID SEMICOLON Declarations                      {root=novoNo("Program",NULL, line, column); $$=root; addfilho($$, $4);}
         ;
 
 Declarations: DeclarationsAux                                   {$$=$1;}
@@ -86,14 +86,14 @@ DeclarationsAux:   DeclarationsAux VarDeclaration SEMICOLON     {$$=$1; addirmao
 VarDeclaration: VAR VarSpec                                     {$$=$2;}
               | VAR LPAR VarSpec SEMICOLON RPAR                 {$$=$3;}
               ;
-IDaux: ID                                                       {$$=novoNo("Id", $1);}
+IDaux: ID                                                       {$$=novoNo("Id", $1, line, column);}
      ;
 
-VarSpec: IDaux Type                                             {$$=novoNo("VarDecl", NULL); /* cria o primeiro no */
+VarSpec: IDaux Type                                             {$$=novoNo("VarDecl", NULL, line, column); /* cria o primeiro no */
                                                                 addfilho($$, $2); /* adiciciona o filho do primeiro no */
                                                                 addirmao($2, $1); /* adiciona irmao ao filho do primeiro no */
                                                                 }
-       | IDaux COMMA_ID Type                                    {$$=novoNo("VarDecl", NULL); /* cria o primeiro no */
+       | IDaux COMMA_ID Type                                    {$$=novoNo("VarDecl", NULL, line, column); /* cria o primeiro no */
                                                                 addfilho($$, $3); /* adiciciona o filho do primeiro no */
                                                                 addirmao($3, $1); /* adiciona irmao ao filho do primeiro no */  
                                                                 addirmao($$, $2); /* adiciona-se um irmão ao pai por causa da recursividade */
@@ -104,99 +104,99 @@ VarSpec: IDaux Type                                             {$$=novoNo("VarD
                                                                 }}
        ;
 
-COMMA_ID: COMMA IDaux COMMA_ID                                  {$$=novoNo("VarDecl", NULL); /* cria novo nó pai */
-                                                                aux1=novoNo("semTipo", NULL); /* cria nó sem tipo */
+COMMA_ID: COMMA IDaux COMMA_ID                                  {$$=novoNo("VarDecl", NULL, line, column); /* cria novo nó pai */
+                                                                aux1=novoNo("semTipo", NULL, line, column); /* cria nó sem tipo */
                                                                 addirmao($$, $3); /* adiciona um irmao ao pai */
                                                                 addfilho($$, aux1); /* adiciona um filho ao pai */
                                                                 addirmao(aux1, $2); /* adiciona um irmão ao filho */
                                                                 }
-        | COMMA IDaux                                           {$$=novoNo("VarDecl", NULL);
-                                                                aux1=novoNo("semTipo", NULL);
+        | COMMA IDaux                                           {$$=novoNo("VarDecl", NULL, line, column);
+                                                                aux1=novoNo("semTipo", NULL, line, column);
                                                                 addfilho($$, aux1);
                                                                 addirmao(aux1, $2);
                                                                 }
         ;
 
-Type: INT                                                       {$$=novoNo("Int", NULL);}
-    | FLOAT32                                                   {$$=novoNo("Float32", NULL);}
-    | BOOL                                                      {$$=novoNo("Bool", NULL);}
-    | STRING                                                    {$$=novoNo("String", NULL);}
+Type: INT                                                       {$$=novoNo("Int", NULL, line, column);}
+    | FLOAT32                                                   {$$=novoNo("Float32", NULL, line, column);}
+    | BOOL                                                      {$$=novoNo("Bool", NULL, line, column);}
+    | STRING                                                    {$$=novoNo("String", NULL, line, column);}
     ;
 
-FuncDeclaration: FUNC IDaux LPAR Parameters RPAR Type FuncBody  {$$=novoNo("FuncDecl", NULL);
-                                                                aux1 = novoNo("FuncHeader", NULL);
+FuncDeclaration: FUNC IDaux LPAR Parameters RPAR Type FuncBody  {$$=novoNo("FuncDecl", NULL, line, column);
+                                                                aux1 = novoNo("FuncHeader", NULL, line, column);
                                                                 addfilho($$, aux1);
                                                                 addirmao(aux1, $7);
                                                                 addfilho(aux1, $2);
                                                                 addirmao($6, $4);
                                                                 addirmao($2, $6);
                                                                 }
-               | FUNC IDaux LPAR Parameters RPAR FuncBody       {$$=novoNo("FuncDecl", NULL);
-                                                                aux1 = novoNo("FuncHeader", NULL);
+               | FUNC IDaux LPAR Parameters RPAR FuncBody       {$$=novoNo("FuncDecl", NULL, line, column);
+                                                                aux1 = novoNo("FuncHeader", NULL, line, column);
                                                                 addfilho($$, aux1);
                                                                 addirmao(aux1, $6);
                                                                 addfilho(aux1, $2);
                                                                 addirmao($2, $4);
                                                                 }
-               | FUNC IDaux LPAR RPAR Type FuncBody             {$$=novoNo("FuncDecl", NULL);
-                                                                aux1 = novoNo("FuncHeader", NULL);
+               | FUNC IDaux LPAR RPAR Type FuncBody             {$$=novoNo("FuncDecl", NULL, line, column);
+                                                                aux1 = novoNo("FuncHeader", NULL, line, column);
                                                                 addfilho($$, aux1);
                                                                 addirmao(aux1, $6);
                                                                 addfilho(aux1, $2);
                                                                 addirmao($2, $5);
-                                                                addirmao($5, novoNo("FuncParams", NULL));
+                                                                addirmao($5, novoNo("FuncParams", NULL, line, column));
                                                                 }
-               | FUNC IDaux LPAR RPAR FuncBody                  {$$=novoNo("FuncDecl", NULL);
-                                                                aux1 = novoNo("FuncHeader", NULL);
+               | FUNC IDaux LPAR RPAR FuncBody                  {$$=novoNo("FuncDecl", NULL, line, column);
+                                                                aux1 = novoNo("FuncHeader", NULL, line, column);
                                                                 addfilho($$, aux1);
                                                                 addfilho(aux1, $2);
-                                                                addirmao($2, novoNo("FuncParams", NULL));
+                                                                addirmao($2, novoNo("FuncParams", NULL, line, column));
                                                                 addirmao(aux1, $5); /* funcbody e funcheader são do mesmo nível */
                                                                 }
                ;
 
-Parameters: IDaux Type COMMA_ID_Type                            {$$=novoNo("FuncParams", NULL);
-                                                                aux1=novoNo("ParamDecl",NULL); 
+Parameters: IDaux Type COMMA_ID_Type                            {$$=novoNo("FuncParams", NULL, line, column);
+                                                                aux1=novoNo("ParamDecl",NULL, line, column); 
                                                                 addfilho($$, aux1);
                                                                 addirmao(aux1, $3);
                                                                 addfilho(aux1, $2);
                                                                 addirmao($2, $1);
                                                                 }
-          | IDaux Type                                          {$$=novoNo("FuncParams", NULL);
-                                                                aux1=novoNo("ParamDecl",NULL); 
+          | IDaux Type                                          {$$=novoNo("FuncParams", NULL, line, column);
+                                                                aux1=novoNo("ParamDecl",NULL, line, column); 
                                                                 addfilho($$, aux1);
                                                                 addfilho(aux1, $2);
                                                                 addirmao($2, $1);
                                                                 }
           ;
 
-COMMA_ID_Type: COMMA IDaux Type COMMA_ID_Type                   {$$=novoNo("ParamDecl",NULL); 
+COMMA_ID_Type: COMMA IDaux Type COMMA_ID_Type                   {$$=novoNo("ParamDecl",NULL, line, column); 
                                                                 addfilho($$,$3);
                                                                 addirmao($3,$2);
                                                                 addirmao($$,$4);
                                                                 }
-             | COMMA IDaux Type                                 {$$=novoNo("ParamDecl",NULL); 
+             | COMMA IDaux Type                                 {$$=novoNo("ParamDecl",NULL, line, column); 
                                                                 addfilho($$,$3);
                                                                 addirmao($3,$2);
                                                                 }
              ;
 
-FuncBody: LBRACE VarsAndStatements RBRACE                       {$$=novoNo("FuncBody", NULL);
+FuncBody: LBRACE VarsAndStatements RBRACE                       {$$=novoNo("FuncBody", NULL, line, column);
                                                                 addfilho($$, $2);
                                                                 }
         ;
 
 VarsAndStatements:  VarsAndStatements VarDeclaration SEMICOLON  {$$=$1; addirmao($1, $2);}
                  |  VarsAndStatements Statement SEMICOLON       {$$=$1; addirmao($1, $2);}
-                 |  VarsAndStatements SEMICOLON                 {$1=$1;}
-                 | /*Epsilon = NULL*/                           {$$=novoNo("NULL", NULL);}
+                 |  VarsAndStatements SEMICOLON                 {$$=$1;}
+                 | /*Epsilon = NULL*/                           {$$=novoNo("NULL", NULL, line, column);}
                  ;
 
-Statement: IDaux ASSIGN Expr                                    {$$=novoNo("Assign", NULL);
+Statement: IDaux ASSIGN Expr                                    {$$=novoNo("Assign", NULL, line, column);
                                                                 addfilho($$, $1);
                                                                 addirmao($1, $3);
                                                                 }
-         | LBRACE RBRACE                                        {$$=novoNo("NULL", NULL);}
+         | LBRACE RBRACE                                        {$$=novoNo("NULL", NULL, line, column);}
          | LBRACE StatementSEMICOLON RBRACE                     {aux2=$2;
                                                                 int n = 0;
                                                                 while(aux2 != NULL) {
@@ -204,181 +204,181 @@ Statement: IDaux ASSIGN Expr                                    {$$=novoNo("Assi
                                                                     aux2=aux2->irmao;
                                                                     }
                                                                 if (n >= 2) {
-                                                                    $$=novoNo("Block", NULL);
+                                                                    $$=novoNo("Block", NULL, line, column);
                                                                     addfilho($$, $2);
                                                                 } else $$=$2;
                                                                 }
-         | IF Expr LBRACE RBRACE                                {$$=novoNo("If", NULL);
+         | IF Expr LBRACE RBRACE                                {$$=novoNo("If", NULL, line, column);
                                                                 addfilho($$, $2);
-                                                                aux1=novoNo("Block", NULL);
+                                                                aux1=novoNo("Block", NULL, line, column);
                                                                 addirmao($2, aux1);
-                                                                addirmao(aux1, novoNo("Block", NULL));
+                                                                addirmao(aux1, novoNo("Block", NULL, line, column));
                                                                 }
-         | IF Expr LBRACE StatementSEMICOLON RBRACE             {$$=novoNo("If", NULL);
+         | IF Expr LBRACE StatementSEMICOLON RBRACE             {$$=novoNo("If", NULL, line, column);
                                                                 addfilho($$, $2);
-                                                                aux1=novoNo("Block", NULL);
+                                                                aux1=novoNo("Block", NULL, line, column);
                                                                 addirmao($2, aux1);
                                                                 addfilho(aux1, $4);
-                                                                addirmao(aux1, novoNo("Block", NULL));
+                                                                addirmao(aux1, novoNo("Block", NULL, line, column));
                                                                 }
-         | IF Expr LBRACE RBRACE ELSE LBRACE RBRACE             {$$=novoNo("If", NULL);
+         | IF Expr LBRACE RBRACE ELSE LBRACE RBRACE             {$$=novoNo("If", NULL, line, column);
                                                                 addfilho($$, $2);
-                                                                aux1=novoNo("Block", NULL);
+                                                                aux1=novoNo("Block", NULL, line, column);
                                                                 addirmao($2, aux1);
-                                                                addirmao(aux1, novoNo("Block", NULL));
+                                                                addirmao(aux1, novoNo("Block", NULL, line, column));
                                                                 }
-         | IF Expr LBRACE StatementSEMICOLON RBRACE ELSE LBRACE RBRACE {$$=novoNo("If", NULL);
+         | IF Expr LBRACE StatementSEMICOLON RBRACE ELSE LBRACE RBRACE {$$=novoNo("If", NULL, line, column);
                                                                         addfilho($$, $2);
-                                                                        aux1=novoNo("Block", NULL);
+                                                                        aux1=novoNo("Block", NULL, line, column);
                                                                         addirmao($2, aux1);
                                                                         addfilho(aux1, $4);
-                                                                        addirmao(aux1, novoNo("Block", NULL));
+                                                                        addirmao(aux1, novoNo("Block", NULL, line, column));
                                                                         }
-         | IF Expr LBRACE RBRACE ELSE LBRACE StatementSEMICOLON RBRACE {$$=novoNo("If", NULL);
+         | IF Expr LBRACE RBRACE ELSE LBRACE StatementSEMICOLON RBRACE {$$=novoNo("If", NULL, line, column);
                                                                         addfilho($$, $2);
-                                                                        aux1=novoNo("Block", NULL);
-                                                                        aux2=novoNo("Block", NULL);
+                                                                        aux1=novoNo("Block", NULL, line, column);
+                                                                        aux2=novoNo("Block", NULL, line, column);
                                                                         addirmao($2, aux1);
                                                                         addirmao(aux1, aux2);
                                                                         addfilho(aux2, $7);
                                                                         }
-         | IF Expr LBRACE StatementSEMICOLON RBRACE ELSE LBRACE StatementSEMICOLON RBRACE {$$=novoNo("If", NULL);
+         | IF Expr LBRACE StatementSEMICOLON RBRACE ELSE LBRACE StatementSEMICOLON RBRACE {$$=novoNo("If", NULL, line, column);
                                                                                             addfilho($$, $2);
-                                                                                            aux1=novoNo("Block", NULL);
-                                                                                            aux2=novoNo("Block", NULL);
+                                                                                            aux1=novoNo("Block", NULL, line, column);
+                                                                                            aux2=novoNo("Block", NULL, line, column);
                                                                                             addirmao($2, aux1);
                                                                                             addfilho(aux1, $4);
                                                                                             addirmao(aux1, aux2);
                                                                                             addfilho(aux2, $8);
                                                                                             }
-         | FOR LBRACE RBRACE                                    {$$=novoNo("For", NULL);
-                                                                addfilho($$, novoNo("Block", NULL));
+         | FOR LBRACE RBRACE                                    {$$=novoNo("For", NULL, line, column);
+                                                                addfilho($$, novoNo("Block", NULL, line, column));
                                                                 }
-         | FOR LBRACE StatementSEMICOLON RBRACE                 {$$=novoNo("For", NULL);
-                                                                aux1=novoNo("Block", NULL);
+         | FOR LBRACE StatementSEMICOLON RBRACE                 {$$=novoNo("For", NULL, line, column);
+                                                                aux1=novoNo("Block", NULL, line, column);
                                                                 addfilho($$, aux1);
                                                                 addfilho(aux1, $3);
                                                                 }
-         | FOR Expr LBRACE RBRACE                               {$$=novoNo("For", NULL);
+         | FOR Expr LBRACE RBRACE                               {$$=novoNo("For", NULL, line, column);
                                                                 addfilho($$, $2);
-                                                                addirmao($2, novoNo("Block", NULL));
+                                                                addirmao($2, novoNo("Block", NULL, line, column));
                                                                 }
-         | FOR Expr LBRACE StatementSEMICOLON RBRACE            {$$=novoNo("For", NULL);
+         | FOR Expr LBRACE StatementSEMICOLON RBRACE            {$$=novoNo("For", NULL, line, column);
                                                                 addfilho($$, $2);
-                                                                aux1=novoNo("Block", NULL);
+                                                                aux1=novoNo("Block", NULL, line, column);
                                                                 addirmao($2, aux1);
                                                                 addfilho(aux1, $4);
                                                                 }
-         | RETURN                                               {$$=novoNo("Return", NULL);}
-         | RETURN Expr                                          {$$=novoNo("Return", NULL);
+         | RETURN                                               {$$=novoNo("Return", NULL, line, column);}
+         | RETURN Expr                                          {$$=novoNo("Return", NULL, line, column);
                                                                 addfilho($$, $2);
                                                                 }
-         | FuncInvocation                                       {$$=novoNo("Call", NULL);
+         | FuncInvocation                                       {$$=novoNo("Call", NULL, line, column);
                                                                 addfilho($$, $1);
                                                                 }
          | ParseArgs                                            {$$=$1;}
-         | PRINT LPAR Expr RPAR                                 {$$=novoNo("Print", NULL);
+         | PRINT LPAR Expr RPAR                                 {$$=novoNo("Print", NULL, line, column);
                                                                 addfilho($$, $3);}
-         | PRINT LPAR STRLIT RPAR                               {$$=novoNo("Print", NULL);
-                                                                aux1=novoNo("StrLit", $3);
+         | PRINT LPAR STRLIT RPAR                               {$$=novoNo("Print", NULL, line, column);
+                                                                aux1=novoNo("StrLit", $3, line, column);
                                                                 addfilho($$, aux1);
                                                                 }
-         | error                                                {$$=novoNo("Error", NULL);}
+         | error                                                {$$=novoNo("Error", NULL, line, column);}
          ;
 
 StatementSEMICOLON: StatementSEMICOLON Statement SEMICOLON      {$$=$1; addirmao($1, $2);}
                   | Statement SEMICOLON                         {$$=$1;}
                   ;
 
-ParseArgs: IDaux COMMA BLANKID ASSIGN PARSEINT LPAR CMDARGS LSQ Expr RSQ RPAR  {$$=novoNo("ParseArgs", NULL);
+ParseArgs: IDaux COMMA BLANKID ASSIGN PARSEINT LPAR CMDARGS LSQ Expr RSQ RPAR  {$$=novoNo("ParseArgs", NULL, line, column);
                                                                                 addfilho($$, $1);
                                                                                 addirmao($1, $9);
                                                                                 }
-         | IDaux COMMA BLANKID ASSIGN PARSEINT LPAR error RPAR  {$$=novoNo("ParseArgs", NULL);
+         | IDaux COMMA BLANKID ASSIGN PARSEINT LPAR error RPAR  {$$=novoNo("ParseArgs", NULL, line, column);
                                                                 addfilho($$, $1);
-                                                                addirmao($1, novoNo("Error", NULL));
+                                                                addirmao($1, novoNo("Error", NULL, line, column));
                                                                 }
          ;
 
 FuncInvocation: IDaux LPAR RPAR                                 {$$=$1;}
               | IDaux LPAR Expr RPAR                            {$$=$1; addirmao($1, $3);}
               | IDaux LPAR Expr COMMAExpr RPAR                  {$$=$1; addirmao($1, $3); addirmao($3, $4);}
-              | IDaux LPAR error RPAR                           {$$=$1; addirmao($1, novoNo("Error", NULL));}
+              | IDaux LPAR error RPAR                           {$$=$1; addirmao($1, novoNo("Error", NULL, line, column));}
               ;
 
 COMMAExpr: COMMAExpr COMMA Expr                                 {$$=$1; addirmao($1, $3);}
          | COMMA Expr                                           {$$=$2;}
          ;
 
-Expr: Expr OR Expr                                              {$$=novoNo("Or", NULL);
+Expr: Expr OR Expr                                              {$$=novoNo("Or", NULL, line, column);
                                                                 addfilho($$, $1);
                                                                 addirmao($1, $3);
                                                                 }
-    | Expr AND Expr                                             {$$=novoNo("And", NULL);
+    | Expr AND Expr                                             {$$=novoNo("And", NULL, line, column);
                                                                 addfilho($$, $1);
                                                                 addirmao($1, $3);
                                                                 }
-    | Expr LT Expr                                              {$$=novoNo("Lt", NULL);
+    | Expr LT Expr                                              {$$=novoNo("Lt", NULL, line, column);
                                                                 addfilho($$, $1);
                                                                 addirmao($1, $3);
                                                                 }
-    | Expr GT Expr                                              {$$=novoNo("Gt", NULL);
+    | Expr GT Expr                                              {$$=novoNo("Gt", NULL, line, column);
                                                                 addfilho($$, $1);
                                                                 addirmao($1, $3);
                                                                 }
-    | Expr EQ Expr                                              {$$=novoNo("Eq", NULL);
+    | Expr EQ Expr                                              {$$=novoNo("Eq", NULL, line, column);
                                                                 addfilho($$, $1);
                                                                 addirmao($1, $3);
                                                                 }
-    | Expr NE Expr                                              {$$=novoNo("Ne", NULL);
+    | Expr NE Expr                                              {$$=novoNo("Ne", NULL, line, column);
                                                                 addfilho($$, $1);
                                                                 addirmao($1, $3);
                                                                 }
-    | Expr LE Expr                                              {$$=novoNo("Le", NULL);
+    | Expr LE Expr                                              {$$=novoNo("Le", NULL, line, column);
                                                                 addfilho($$, $1);
                                                                 addirmao($1, $3);
                                                                 }
-    | Expr GE Expr                                              {$$=novoNo("Ge", NULL);
+    | Expr GE Expr                                              {$$=novoNo("Ge", NULL, line, column);
                                                                 addfilho($$, $1);
                                                                 addirmao($1, $3);
                                                                 }
-    | Expr PLUS Expr                                            {$$=novoNo("Add", NULL);
+    | Expr PLUS Expr                                            {$$=novoNo("Add", NULL, line, column);
                                                                 addfilho($$, $1);
                                                                 addirmao($1, $3);
                                                                 }
-    | Expr MINUS Expr                                           {$$=novoNo("Sub", NULL);
+    | Expr MINUS Expr                                           {$$=novoNo("Sub", NULL, line, column);
                                                                 addfilho($$, $1);
                                                                 addirmao($1, $3);
                                                                 }
-    | Expr STAR Expr                                            {$$=novoNo("Mul", NULL);
+    | Expr STAR Expr                                            {$$=novoNo("Mul", NULL, line, column);
                                                                 addfilho($$, $1);
                                                                 addirmao($1, $3);
                                                                 }
-    | Expr DIV Expr                                             {$$=novoNo("Div", NULL);
+    | Expr DIV Expr                                             {$$=novoNo("Div", NULL, line, column);
                                                                 addfilho($$, $1);
                                                                 addirmao($1, $3);
                                                                 }
-    | Expr MOD Expr                                             {$$=novoNo("Mod", NULL);
+    | Expr MOD Expr                                             {$$=novoNo("Mod", NULL, line, column);
                                                                 addfilho($$, $1);
                                                                 addirmao($1, $3);
                                                                 }
-    | NOT Expr                                                  {$$=novoNo("Not", NULL);
+    | NOT Expr                                                  {$$=novoNo("Not", NULL, line, column);
                                                                 addfilho($$, $2);
                                                                 }
-    | MINUS Expr        %prec DIV                               {$$=novoNo("Minus", NULL);
+    | MINUS Expr        %prec DIV                               {$$=novoNo("Minus", NULL, line, column);
                                                                 addfilho($$, $2);
                                                                 }
-    | PLUS Expr         %prec DIV                               {$$=novoNo("Plus", NULL);
+    | PLUS Expr         %prec DIV                               {$$=novoNo("Plus", NULL, line, column);
                                                                 addfilho($$, $2);
                                                                 }
-    | INTLIT                                                    {$$=novoNo("IntLit", $1);}
-    | REALLIT                                                   {$$=novoNo("RealLit", $1);}
+    | INTLIT                                                    {$$=novoNo("IntLit", $1, line, column);}
+    | REALLIT                                                   {$$=novoNo("RealLit", $1, line, column);}
     | IDaux                                                     {$$=$1;}
-    | FuncInvocation                                            {$$=novoNo("Call", NULL);
+    | FuncInvocation                                            {$$=novoNo("Call", NULL, line, column);
                                                                 addfilho($$, $1);
                                                                 }
     | LPAR Expr RPAR                                            {$$=$2;}
-    | LPAR error RPAR                                           {$$=novoNo("Error", NULL);}
+    | LPAR error RPAR                                           {$$=novoNo("Error", NULL, line, column);}
     ;
 
 %%
