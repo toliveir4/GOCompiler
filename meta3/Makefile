@@ -10,8 +10,8 @@ exe: ${FILENAME1} ${FILENAME2} ${FILENAME3} ${FILENAME4}
 	lex ${FILENAME1}
 	yacc -y -d -t -v -Wno-yacc ${FILENAME2}
 	cc -o ${EXE} -ggdb3 y.tab.c lex.yy.c ${FILENAME3} ${FILENAME5}
-	./${EXE} -t < testes/errors.dgo > output.out
-	#valgrind --leak-check=full --show-leak-kinds=all --log-file="valgrind.txt" -s ./${EXE} -t < testes/errors.dgo > output.out
+	./${EXE} -s < testes/valid_program.dgo > output.out
+	#valgrind --leak-check=full --show-leak-kinds=all --log-file="valgrind.txt" -s ./${EXE} -t < testes/valid_program.dgo > output.out
 clear:
 	rm -rf *${EXE}
 	rm -f ${EXE}.zip

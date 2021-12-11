@@ -12,12 +12,20 @@ typedef struct globalTable{ // lista ligada de funcoes e variaveis globais
     char* type;
     int func;
     int declared;
+    struct funcParams* params;
     struct globalTable *next;
 } globalTable;
+
+typedef struct funcParams{ // representa uma lista ligada de parametros de uma funcao
+    char* name;
+    char* type;
+    struct funcParams *next;
+} funcParams;
 
 void criaTabelas(no_ast* atual);
 void printTabelas();
 void addFunc(no_ast* atual);
+void addFuncParams(no_ast* atual, globalTable* func);
 void addGlobalVar(no_ast* atual);
 int existsGlobal(char* name, no_ast* atual, int opcao);
 
