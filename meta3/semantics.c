@@ -113,7 +113,7 @@ void addFunc(no_ast* atual){
     funcType[0] = tolower(funcType[0]);
 
     // verifica se já existe uma função com o mesmo nome
-    if (existsGlobal(funcName, atual->filho->filho, 1)){
+    if (existsGlobal(funcName, atual->filho->filho)){
         return;
     }  
 
@@ -236,7 +236,7 @@ void addGlobalVar(no_ast* atual){
     varType[0] = tolower(varType[0]);
 
     // verifica se já existe uma variavel global com o mesmo nome
-    if (existsGlobal(varName, atual->filho->irmao, 2)){
+    if (existsGlobal(varName, atual->filho->irmao)){
         return;
     }
 
@@ -272,23 +272,16 @@ void addGlobalVar(no_ast* atual){
     return;
 }
 
-int existsGlobal(char *name, no_ast *atual, int opcao){
-    // 1 - funcoes     2 - variaveis globais
-
+int existsGlobal(char *name, no_ast *atual){
     globalTable *aux = Head;
 
     while(aux){
         // percorre a lista global e compara os nomes
         if(strcmp(name, aux->name) == 0){
-            if(opcao == 1){
-                printf("Line %d, column %d: Symbol %s already defined\n", atual->line, atual->column, name);
-                return 1;
-            }
-            else if(opcao == 2){
-                printf("Line %d, column %d: Symbol %s already defined\n", atual->line, atual->column, name);
-                return 1;
-            }
+            printf("Line %d, column %d: Symbol %s already defined\n", atual->line, atual->column, name);
+            return 1;
         }
+
         aux = aux->next;
     }
     return 0;

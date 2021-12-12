@@ -35,7 +35,7 @@ void printTabelas();
 void addFunc(no_ast* atual);
 void addFuncParams(no_ast* atual, globalTable* func);
 void addGlobalVar(no_ast* atual);
-int existsGlobal(char* name, no_ast* atual, int opcao);
+int existsGlobal(char* name, no_ast* atual);
 void addFuncLocal(no_ast* atual);
 globalTable* getFuncPointer(char* name);
 void addFuncLocalVar(no_ast *atual, globalTable *func);
