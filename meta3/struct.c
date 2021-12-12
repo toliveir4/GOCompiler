@@ -33,6 +33,7 @@ void addirmao(no_ast *no, no_ast *novoirmao)
 
     while (no_aux->irmao)
         no_aux = no_aux->irmao;
+        
     no_aux->irmao = novoirmao;
 }
 
