@@ -42,7 +42,64 @@ void criaTabelas(no_ast* atual){
 }
 
 void printTabelas(){
+    printf("===== Global Symbol Table =====\n");
+    globalTable *aux = Head;
+    while(aux){
+        printf("%s", aux->name);
+        if(aux->func){
+            printf("\t(");
+            funcParams *paramsAux = aux->params;
+            if(paramsAux){
+                printf("%s",paramsAux->type);
+                paramsAux=paramsAux->next;
+                while(paramsAux){
+                    printf(",%s",paramsAux->type);
+                    paramsAux=paramsAux->next;
+                }
+            }
+
+            printf(")");
+        }
+        else{
+            printf("\t");
+        }
+        printf("\t%s\n", aux->type);
+        aux = aux->next;
+    }
     
+    aux = Head;
+    while(aux){
+        if(aux->func){
+            printf("\n===== Function ");
+            printf("%s(", aux->name);
+            funcParams *paramsAux = aux->params;
+            if(paramsAux){
+                printf("%s", paramsAux->type);
+                paramsAux = paramsAux->next;
+                while(paramsAux){
+                    printf(",%s", paramsAux->type);
+                    paramsAux = paramsAux->next;
+                }
+            }
+            printf(") Symbol Table =====\n");
+            printf("%s\t\t%s\n", "return", aux->type);         // print do return 
+
+            paramsAux = aux->params;
+            while(paramsAux){
+                printf("%s\t\t%s\tparam\n",paramsAux->name,paramsAux->type); // print dos parametros como variaveis locais
+                paramsAux=paramsAux->next;
+            }
+
+            funcVars *varsAux = aux->vars;  // print das variaveis locais
+            while(varsAux){
+                printf("%s\t\t%s\n", varsAux->name, varsAux->type);
+                varsAux = varsAux->next;
+            }
+        }
+        
+        aux = aux->next;
+    }
+    printf("\n");
 }
 
 void addFunc(no_ast* atual){
@@ -53,6 +110,7 @@ void addFunc(no_ast* atual){
 
     char* funcType = (char *) malloc(sizeof(char) * strlen(atual->filho->filho->irmao->tipo) + 1);
     strcpy(funcType, atual->filho->filho->irmao->tipo); // FuncDecl->FuncHeader->Id->FuncParams
+    funcType[0] = tolower(funcType[0]);
 
     // verifica se já existe uma função com o mesmo nome
     if (existsGlobal(funcName, atual->filho->filho, 1)){
@@ -63,7 +121,7 @@ void addFunc(no_ast* atual){
         // primeiro elemento da lista global
         Head = (globalTable *) malloc(sizeof(globalTable));
 
-        if(strcmp(funcType, "FuncParams") == 0){
+        if(strcmp(funcType, "FuncParams") == 0 || strcmp(funcType,"funcParams") == 0){
             funcType = "none";
         }
 
@@ -86,7 +144,8 @@ void addFunc(no_ast* atual){
     aux->next = (globalTable *) malloc(sizeof(globalTable));
     aux = aux->next;
 
-    if(strcmp(funcType, "FuncParams") == 0){
+
+    if(strcmp(funcType, "FuncParams") == 0 || strcmp(funcType,"funcParams") == 0){
         funcType = "none";
     }
 
@@ -131,7 +190,7 @@ void addFuncParams(no_ast* atual, globalTable* func){
             // ParamDecl->Type->Id(valor)
             if(strcmp(aux->name, nodeAux->filho->irmao->valor) == 0){
                 flag = 1;
-                printf("Line %d, column %d: Symbol %s already defined\n",nodeAux->filho->irmao->line,nodeAux->filho->irmao->column,nodeAux->filho->irmao->valor);
+                printf("Line %d, column %d: Symbol %s already defined\n", nodeAux->filho->irmao->line, nodeAux->filho->irmao->column, nodeAux->filho->irmao->valor);
             }
             aux = aux->next;
         }
@@ -140,10 +199,11 @@ void addFuncParams(no_ast* atual, globalTable* func){
             if(!aux1){
                 aux1 = (funcParams *) malloc(sizeof(funcParams));
                 
-                aux1->name=(char *) malloc(sizeof(char) * strlen(nodeAux->filho->irmao->valor) + 1); 
+                aux1->name = (char *) malloc(sizeof(char) * strlen(nodeAux->filho->irmao->valor) + 1); 
                 strcpy(aux1->name, nodeAux->filho->irmao->valor); // ParamDecl->Type->Id(valor)
-                aux1->type=(char *) malloc(sizeof(char) * strlen(nodeAux->filho->tipo) + 1);
+                aux1->type = (char *) malloc(sizeof(char) * strlen(nodeAux->filho->tipo) + 1);
                 strcpy(aux1->type, nodeAux->filho->tipo); // ParamDecl->Type
+                aux1->type[0] = tolower(aux1->type[0]);
                 aux1->next = NULL;
 
                 paramsHead = aux1; // guarda o primeiro elemento da lista
@@ -156,6 +216,7 @@ void addFuncParams(no_ast* atual, globalTable* func){
                 strcpy(aux1->name, nodeAux->filho->irmao->valor); // ParamDecl->Type->Id(valor)
                 aux1->type=(char *) malloc(sizeof(char) * strlen(nodeAux->filho->tipo) + 1);
                 strcpy(aux1->type, nodeAux->filho->tipo); // ParamDecl->Type
+                aux1->type[0] = tolower(aux1->type[0]);
                 aux1->next = NULL;
             }
         }
@@ -172,6 +233,7 @@ void addGlobalVar(no_ast* atual){
 
     char* varType = (char *) malloc(sizeof(char) * strlen(atual->filho->tipo) + 1);
     strcpy(varType, atual->filho->tipo); // VarDecl->Type
+    varType[0] = tolower(varType[0]);
 
     // verifica se já existe uma variavel global com o mesmo nome
     if (existsGlobal(varName, atual->filho->irmao, 2)){
@@ -192,8 +254,12 @@ void addGlobalVar(no_ast* atual){
         return;
     }
 
+    aux = Head;
+
     // procura o fim da lista global
-    while(aux->next) aux = aux->next;
+    while(aux->next){
+        aux = aux->next;
+    }
 
     aux->next = (globalTable *) malloc(sizeof(globalTable));
     aux = aux->next;
@@ -294,6 +360,7 @@ void addFuncLocalVar(no_ast *atual, globalTable *func){
         strcpy(varsAux->name, aux->valor);
         varsAux->type = (char*) malloc(sizeof(char) * strlen(atual->filho->tipo) + 1);
         strcpy(varsAux->type, atual->filho->tipo);
+        varsAux->type[0] = tolower(varsAux->type[0]);
         varsAux->next = NULL;
 
         func->vars = varsAux;
@@ -326,6 +393,7 @@ void addFuncLocalVar(no_ast *atual, globalTable *func){
     strcpy(varsAux->name, aux->valor);
     varsAux->type = (char*) malloc(sizeof(char) * strlen(atual->filho->tipo) + 1);
     strcpy(varsAux->type, atual->filho->tipo);
+    varsAux->type[0] = tolower(varsAux->type[0]);
     varsAux->next = NULL;
 
     // verifica se a variavel e utilizada
