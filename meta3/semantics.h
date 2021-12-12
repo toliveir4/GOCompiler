@@ -13,6 +13,7 @@ typedef struct globalTable{ // lista ligada de funcoes e variaveis globais
     int func;
     int declared;
     struct funcParams* params;
+    struct funcVars* vars;
     struct globalTable *next;
 } globalTable;
 
@@ -22,11 +23,21 @@ typedef struct funcParams{ // representa uma lista ligada de parametros de uma f
     struct funcParams *next;
 } funcParams;
 
+typedef struct funcVars{ // representa uma lista ligada de parametros de uma funcao
+    int param;
+    char* name;
+    char* type;
+    struct funcVars *next;
+} funcVars;
+
 void criaTabelas(no_ast* atual);
 void printTabelas();
 void addFunc(no_ast* atual);
 void addFuncParams(no_ast* atual, globalTable* func);
 void addGlobalVar(no_ast* atual);
 int existsGlobal(char* name, no_ast* atual, int opcao);
+void addFuncLocal(no_ast* atual);
+globalTable* getFuncPointer(char* name);
+void addFuncLocalVar(no_ast *atual, globalTable *func);
 
 #endif //!SEMANTICS_H

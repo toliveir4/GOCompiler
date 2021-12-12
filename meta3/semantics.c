@@ -5,10 +5,10 @@
 #include "semantics.h"
 #include <ctype.h>
 
-struct globalTable *Head =NULL;
+globalTable *Head =NULL;
 
 void criaTabelas(no_ast* atual){
-    atual = atual->filho; // salta program
+    atual = atual->filho; // salta "Program"
     no_ast* globalHead = atual; // guarda o inicio da lista de funções e variaveis globais
 
     // adiciona funcoes e variaveis globais
@@ -29,13 +29,23 @@ void criaTabelas(no_ast* atual){
     atual = globalHead;
 
     // adiciona vars locais e anota a AST
+    while(strcmp(atual->tipo, "FuncDecl") == 0 || strcmp(atual->tipo, "VarDecl") == 0){
+        // se encontrar uma função
+        if(strcmp(atual->tipo, "FuncDecl") == 0)
+            addFuncLocal(atual);
+
+        atual = atual->irmao; // passa para a proxima declaracao
+        if(atual == NULL){
+            break;
+        }
+    }
 }
 
 void printTabelas(){
 }
 
 void addFunc(no_ast* atual){
-    struct globalTable* aux = Head;
+    globalTable* aux = Head;
 
     char* funcName = (char *) malloc(sizeof(char) * strlen(atual->filho->filho->valor) + 1);
     strcpy(funcName, atual->filho->filho->valor); // FuncDecl->FuncHeader->Id(nome)
@@ -50,7 +60,7 @@ void addFunc(no_ast* atual){
 
     if(!Head){
         // primeiro elemento da lista global
-        Head = (struct globalTable *) malloc(sizeof(globalTable));
+        Head = (globalTable *) malloc(sizeof(globalTable));
 
         if(strcmp(funcType, "FuncParams") == 0){
             funcType = "none";
@@ -62,6 +72,7 @@ void addFunc(no_ast* atual){
         Head->type = funcType;
         Head->next = NULL;
         Head->params = NULL;
+        Head->vars = NULL;
 
         addFuncParams(atual, Head);
         
@@ -71,7 +82,7 @@ void addFunc(no_ast* atual){
     // procura o último elemento da lista
     while(aux->next) aux = aux->next;
 
-    aux->next = (struct globalTable *) malloc(sizeof(globalTable));
+    aux->next = (globalTable *) malloc(sizeof(globalTable));
     aux = aux->next;
 
     if(strcmp(funcType, "FuncParams") == 0){
@@ -84,6 +95,7 @@ void addFunc(no_ast* atual){
     aux->type = funcType;
     aux->next = NULL;
     aux->params = NULL;
+    aux->vars = NULL;
 
     addFuncParams(atual, aux);
 
@@ -125,7 +137,7 @@ void addFuncParams(no_ast* atual, globalTable* func){
 
         if(!flag){
             if(!aux1){
-                aux1 = (struct funcParams *) malloc(sizeof(funcParams));
+                aux1 = (funcParams *) malloc(sizeof(funcParams));
                 
                 aux1->name=(char *) malloc(sizeof(char) * strlen(nodeAux->filho->irmao->valor) + 1); 
                 strcpy(aux1->name, nodeAux->filho->irmao->valor); // ParamDecl->Type->Id(valor)
@@ -136,7 +148,7 @@ void addFuncParams(no_ast* atual, globalTable* func){
                 paramsHead = aux1; // guarda o primeiro elemento da lista
             }
             else{
-                aux1->next = (struct funcParams *) malloc(sizeof(funcParams));
+                aux1->next = (funcParams *) malloc(sizeof(funcParams));
                 aux1 = aux1->next;
 
                 aux1->name=(char *) malloc(sizeof(char) * strlen(nodeAux->filho->irmao->valor) + 1); 
@@ -165,11 +177,11 @@ void addGlobalVar(no_ast* atual){
         return;
     }
 
-    struct globalTable *aux = (struct globalTable *) malloc(sizeof(globalTable));
+    globalTable *aux = (globalTable *) malloc(sizeof(globalTable));
 
     if(!Head){
         // primeiro elemento da lista global
-        Head = (struct globalTable *) malloc(sizeof(globalTable));
+        Head = (globalTable *) malloc(sizeof(globalTable));
         
         Head->func = 0;
         Head->name = varName;
@@ -182,7 +194,7 @@ void addGlobalVar(no_ast* atual){
     // procura o fim da lista global
     while(aux->next) aux = aux->next;
 
-    aux->next = (struct globalTable *) malloc(sizeof(globalTable));
+    aux->next = (globalTable *) malloc(sizeof(globalTable));
     aux = aux->next;
 
     aux->func = 0;
@@ -196,7 +208,7 @@ void addGlobalVar(no_ast* atual){
 int existsGlobal(char *name, no_ast *atual, int opcao){
     // 1 - funcoes     2 - variaveis globais
 
-    struct globalTable *aux = Head;
+    globalTable *aux = Head;
 
     while(aux){
         // percorre a lista global e compara os nomes
@@ -213,4 +225,100 @@ int existsGlobal(char *name, no_ast *atual, int opcao){
         aux = aux->next;
     }
     return 0;
+}
+
+void addFuncLocal(no_ast* atual){
+    no_ast* nodeAux = atual->filho->irmao->filho; // FuncDecl->FuncHeader->FuncBody->VarDecl, Return ...
+    globalTable *funcP = getFuncPointer(atual->filho->filho->valor); // recebe o ponteiro da funçao na lista global
+
+    // verifica se existe a funcao na lista global e ainda nao foi declarada
+    if(funcP){
+        // percorre 
+        while(nodeAux){
+            if(strcmp(nodeAux->tipo, "VarDecl") == 0){
+                // se for uma declaracao de uma variavel
+                addFuncLocalVar(nodeAux, funcP);
+            }
+            else if(strcmp(nodeAux->tipo, "NULL") != 0){
+                // se for outra coisa como um assign, return ...
+                //anotaStatementsExpressoes(nodeAux, funcP);
+            }
+
+            nodeAux=nodeAux->irmao;
+        }
+    }
+}
+
+globalTable* getFuncPointer(char* name){
+    globalTable *aux = Head;
+
+    while(aux){
+        if(strcmp(aux->name, name) == 0 && aux->func){
+            // verifica se a função já foi declarada
+            if(!aux->declared){
+                aux->declared = 1;
+                return aux;
+            }
+
+            return NULL;
+        }
+
+        aux = aux->next;
+    }
+
+    return NULL;
+}
+
+void addFuncLocalVar(no_ast *atual, globalTable *func){
+    no_ast *aux = atual->filho->irmao; // VarDecl->Type->Id
+    funcParams *paramsAux = func->params;
+    
+    // verifica se a variavel existe nos parametros da funcao
+    while(paramsAux){
+        if(strcmp(paramsAux->name, aux->valor) == 0){
+            printf("Line %d, column %d: Symbol %s already defined\n", aux->line, aux->column, aux->valor);
+            return;
+        }
+
+        paramsAux = paramsAux->next;
+    }
+
+    funcVars *varsAux = func->vars;
+
+    if(!varsAux){
+        // primeiro elemento da lista ligada
+        varsAux = (funcVars*) malloc(sizeof(funcVars));
+
+        varsAux->name = (char*) malloc(sizeof(char) * strlen(aux->valor) + 1);
+        strcpy(varsAux->name, aux->tipo);
+        varsAux->type = (char*) malloc(sizeof(char) * strlen(atual->filho->tipo) + 1);
+        strcpy(varsAux->type, atual->filho->tipo);
+        varsAux->next = NULL;
+
+        func->vars = varsAux;
+
+        return;
+    }
+
+    // verifica se ja existe a variavel local ao mesmo tempo que percorre a lista até ao fim
+    while(varsAux){
+        if(strcmp(varsAux->name, aux->valor) == 0){
+            printf("Line %d, column %d: Symbol %s already defined\n", aux->line, aux->column, aux->valor);
+            return;
+        }
+
+        if(!varsAux->next)
+            break;
+
+        varsAux = varsAux->next;
+    }
+
+    varsAux->next = (funcVars*) malloc(sizeof(funcVars));
+    varsAux = varsAux->next;
+
+    varsAux->name = (char*) malloc(sizeof(char) * strlen(aux->valor) + 1);
+    strcpy(varsAux->name, aux->tipo);
+    varsAux->type = (char*) malloc(sizeof(char) * strlen(atual->filho->tipo) + 1);
+    strcpy(varsAux->type, atual->filho->tipo);
+    varsAux->next = NULL;
 }
