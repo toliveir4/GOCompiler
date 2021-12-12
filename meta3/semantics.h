@@ -39,5 +39,6 @@ int existsGlobal(char* name, no_ast* atual, int opcao);
 void addFuncLocal(no_ast* atual);
 globalTable* getFuncPointer(char* name);
 void addFuncLocalVar(no_ast *atual, globalTable *func);
+int checkLocalVarUsed(no_ast *atual, char *name);
 
 #endif //!SEMANTICS_H

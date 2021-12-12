@@ -42,6 +42,7 @@ void criaTabelas(no_ast* atual){
 }
 
 void printTabelas(){
+    
 }
 
 void addFunc(no_ast* atual){
@@ -290,12 +291,17 @@ void addFuncLocalVar(no_ast *atual, globalTable *func){
         varsAux = (funcVars*) malloc(sizeof(funcVars));
 
         varsAux->name = (char*) malloc(sizeof(char) * strlen(aux->valor) + 1);
-        strcpy(varsAux->name, aux->tipo);
+        strcpy(varsAux->name, aux->valor);
         varsAux->type = (char*) malloc(sizeof(char) * strlen(atual->filho->tipo) + 1);
         strcpy(varsAux->type, atual->filho->tipo);
         varsAux->next = NULL;
 
         func->vars = varsAux;
+
+        // verifica se a variavel e utilizada
+        if (checkLocalVarUsed(atual->irmao, varsAux->name) == 0){
+            printf("Line %d, column %d: Symbol %s declared but never used\n", aux->line, aux->column, varsAux->name);
+        }
 
         return;
     }
@@ -317,8 +323,35 @@ void addFuncLocalVar(no_ast *atual, globalTable *func){
     varsAux = varsAux->next;
 
     varsAux->name = (char*) malloc(sizeof(char) * strlen(aux->valor) + 1);
-    strcpy(varsAux->name, aux->tipo);
+    strcpy(varsAux->name, aux->valor);
     varsAux->type = (char*) malloc(sizeof(char) * strlen(atual->filho->tipo) + 1);
     strcpy(varsAux->type, atual->filho->tipo);
     varsAux->next = NULL;
+
+    // verifica se a variavel e utilizada
+    if (checkLocalVarUsed(atual->irmao, varsAux->name) == 0){
+        printf("Line %d, column %d: Symbol %s declared but never used\n", aux->line, aux->column, varsAux->name);
+    }
+}
+
+int checkLocalVarUsed(no_ast *atual, char *name){
+    // se chegar ao fim
+    if(!atual)
+        return 0;
+
+    // procura a variavel em tudo menos em "VarDecl" porque não tem sentido
+    if(strcmp(atual->tipo, "VarDecl") == 0)
+        return checkLocalVarUsed(atual->irmao, name);
+
+    // enquanto não encontra um "Id" percorre a estrutura
+    if(strcmp(atual->tipo, "Id") != 0)
+        return checkLocalVarUsed(atual->filho, name) || checkLocalVarUsed(atual->irmao, name);
+
+    // quando encontrar um "Id"
+    // se nao for igual ao nome da variavel continua a procurar
+    if(strcmp(atual->valor, name) != 0)
+        return checkLocalVarUsed(atual->filho, name) || checkLocalVarUsed(atual->irmao, name);
+
+    // se encontrar um "Id" e um nome correspondente retorna 1
+    return 1;
 }
