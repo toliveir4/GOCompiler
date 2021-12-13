@@ -10,7 +10,7 @@ exe: ${FILENAME1} ${FILENAME2} ${FILENAME3} ${FILENAME4}
 	lex ${FILENAME1}
 	yacc -y -d -t -v -Wno-yacc ${FILENAME2}
 	cc -o ${EXE} -ggdb3 y.tab.c lex.yy.c ${FILENAME3} ${FILENAME5}
-	./${EXE} -s < testes/errors.dgo > output.out
+	./${EXE} -s < testes/variable_func_symtab_aast.dgo > output.out
 clear:
 	rm -rf *${EXE}
 	rm -f ${EXE}.zip
