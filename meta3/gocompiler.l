@@ -136,7 +136,7 @@ int main(int argc, char* argv[])
             yyparse();
             if (!syntaxError){
                 criaTabelas(root);
-                if(!semanticError){
+                if(!semanticError || semanticError){
                     printTabelas();
                     printAST(root,0);
                 }

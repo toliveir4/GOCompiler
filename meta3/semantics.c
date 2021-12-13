@@ -442,6 +442,12 @@ int checkLocalVarUsed(no_ast *atual, char *name){
 }
 
 char* anotaAst(no_ast *atual, globalTable *func){
+    /*printf("%s ",atual->tipo);
+    if(atual->valor){
+        printf("%s",atual->valor);
+    }
+    printf("\n");*/
+
     if(strcmp(atual->tipo, "VarDecl") == 0){
         return "null"; 
     }
@@ -458,8 +464,8 @@ char* anotaAst(no_ast *atual, globalTable *func){
         // se uma das variaveis  ou ambas não tiverem tipo
         if(strcmp(tipo1, "undef") == 0 || strcmp(tipo2, "undef") == 0){
             char *str = (char *) malloc(256);
-            sprintf(str, "Line %d, column %d: Operator = cannot be applied to types %s, %s\n", atual->line, atual->column, tipo1, tipo2);
-            addErro(str, atual->line, atual->column);
+            sprintf(str, "Line %d, column %d: Operator = cannot be applied to types %s, %s\n", atual->line, atual->filho->column + (int) strlen(atual->filho->valor) + 1, tipo1, tipo2);
+            addErro(str, atual->line, atual->filho->column + (int) strlen(atual->filho->valor) + 1);
             semanticError = 1;
             addNota(atual, "undef");
             return "undef";
@@ -468,8 +474,8 @@ char* anotaAst(no_ast *atual, globalTable *func){
         // se as duas variáveis não tiverem o mesmo tipo
         if(strcmp(tipo1, tipo2) != 0){
             char *str = (char *) malloc(256);
-            sprintf(str, "Line %d, column %d: Operator = cannot be applied to types %s, %s\n", atual->line, atual->column, tipo1, tipo2);
-            addErro(str, atual->line, atual->column);
+            sprintf(str, "Line %d, column %d: Operator = cannot be applied to types %s, %s\n", atual->line, atual->filho->column + (int) strlen(atual->filho->valor) + 1, tipo1, tipo2);
+            addErro(str, atual->line, atual->filho->column + (int) strlen(atual->filho->valor) + 1);
             semanticError = 1;             
             addNota(atual, tipo1);
             return tipo1;
@@ -527,8 +533,8 @@ char* anotaAst(no_ast *atual, globalTable *func){
 
         if(strcmp(tipo, "bool") != 0){
             char *str = (char *) malloc(256);
-            sprintf(str, "Line %d, column %d: Operator ! cannot be applied to type %s\n", atual->line, atual->column, tipo);
-            addErro(str, atual->line, atual->column);
+            sprintf(str, "Line %d, column %d: Operator ! cannot be applied to type %s\n", atual->line, atual->filho->column - 1, tipo);
+            addErro(str, atual->line, atual->filho->column - 1);
             semanticError = 1;
             addNota(atual, "undef");
             return "undef";
@@ -570,8 +576,8 @@ char* anotaAst(no_ast *atual, globalTable *func){
 
         if(strcmp(tipo, "bool") != 0){
             char *str = (char *) malloc(256);
-            sprintf(str, "Line %d, column %d: Incompatible type %s in if statement\n", atual->line, atual->column, tipo);
-            addErro(str, atual->line, atual->column);
+            sprintf(str, "Line %d, column %d: Incompatible type %s in if statement\n", atual->filho->line, atual->filho->column, tipo);
+            addErro(str, atual->filho->line, atual->filho->column);
             semanticError = 1;
             return "null";
         }
@@ -586,12 +592,15 @@ char* anotaAst(no_ast *atual, globalTable *func){
     else if(strcmp(atual->tipo, "For") == 0){
         char *tipo = anotaAst(atual->filho, func);
 
+        if(strcmp(tipo, "undef") == 0){
+            return "null";
+        }
+
         if(strcmp(tipo, "bool") != 0){
             char *str = (char *) malloc(256);
-            sprintf(str, "Line %d, column %d: Operator for cannot be applied to type %s\n", atual->line, atual->column, tipo);
-            addErro(str, atual->line, atual->column);
+            sprintf(str, "Line %d, column %d: Incompatible type %s in for statement\n", atual->filho->line, atual->filho->column, tipo);
+            addErro(str, atual->filho->line, atual->filho->column);
             semanticError = 1;
-            return "null";
         }
 
         // chama o "Block" para anotar
@@ -620,8 +629,8 @@ char* anotaAst(no_ast *atual, globalTable *func){
             }
             else if(strcmp(atual->tipo, "Lt") == 0){
                 char *str = (char *) malloc(256);
-                sprintf(str, "Line %d, column %d: Operator < cannot be applied to types %s, %s\n", atual->line, atual->column, tipo1, tipo2);
-                addErro(str, atual->line, atual->column);
+                sprintf(str, "Line %d, column %d: Operator < cannot be applied to types %s, %s\n", atual->line, atual->filho->column + (int) strlen(atual->filho->valor) + 1, tipo1, tipo2);
+                addErro(str, atual->line, atual->column + (int) strlen(atual->filho->valor) + 1);
                 semanticError = 1;
                 addNota(atual, "undef");
                 return "undef";
@@ -668,35 +677,39 @@ char* anotaAst(no_ast *atual, globalTable *func){
         char *tipo1 = anotaAst(atual->filho, func);
         char *tipo2 = anotaAst(atual->filho->irmao, func);
 
-        if((strcmp(tipo1, "int") != 0 && strcmp(tipo1, "float32") != 0) || ((strcmp(tipo2, "int") != 0 && strcmp(tipo2, "float32") != 0)) || strcmp(tipo1, tipo2) != 0){
+        if((strcmp(tipo1, tipo2) == 0) && (strcmp(tipo1, "int") == 0 || strcmp(tipo1, "float32") == 0) && (strcmp(tipo2, "int") == 0 || strcmp(tipo2, "float32") == 0)){
+            addNota(atual, tipo1);
+            return tipo1;    
+        }
+        else{
             if(strcmp(atual->tipo, "Add") == 0){
                 char *str = (char *) malloc(256);
-                sprintf(str, "Line %d, column %d: Operator + cannot be applied to types %s, %s\n", atual->line, atual->column, tipo1, tipo2);
-                addErro(str, atual->line, atual->column);
+                sprintf(str, "Line %d, column %d: Operator + cannot be applied to types %s, %s\n", atual->line, atual->filho->column + (int) strlen(atual->filho->valor) + 1, tipo1, tipo2);
+                addErro(str, atual->line, atual->filho->column + strlen(atual->filho->valor) + 1);
                 semanticError = 1;
                 addNota(atual, "undef");
                 return "undef";
             }
             else if(strcmp(atual->tipo, "Sub") == 0){
                 char *str = (char *) malloc(256);
-                sprintf(str, "Line %d, column %d: Operator - cannot be applied to types %s, %s\n", atual->line, atual->column, tipo1, tipo2);
-                addErro(str, atual->line, atual->column);
+                sprintf(str, "Line %d, column %d: Operator - cannot be applied to types %s, %s\n", atual->line, atual->filho->column + (int) strlen(atual->filho->valor) + 1, tipo1, tipo2);
+                addErro(str, atual->line, atual->filho->column + strlen(atual->filho->valor) + 1);
                 semanticError = 1;
                 addNota(atual, "undef");
                 return "undef";
             }
             else if(strcmp(atual->tipo, "Mul") == 0){
                 char *str = (char *) malloc(256);
-                sprintf(str, "Line %d, column %d: Operator * cannot be applied to types %s, %s\n", atual->line, atual->column, tipo1, tipo2);
-                addErro(str, atual->line, atual->column);
+                sprintf(str, "Line %d, column %d: Operator * cannot be applied to types %s, %s\n", atual->line, atual->filho->column + (int) strlen(atual->filho->valor) + 1, tipo1, tipo2);
+                addErro(str, atual->line, atual->filho->column + strlen(atual->filho->valor) + 1);
                 semanticError = 1;
                 addNota(atual, "undef");
                 return "undef";
             }
             else if(strcmp(atual->tipo, "Div") == 0){
                 char *str = (char *) malloc(256);
-                sprintf(str, "Line %d, column %d: Operator / cannot be applied to types %s, %s\n", atual->line, atual->column, tipo1, tipo2);
-                addErro(str, atual->line, atual->column);
+                sprintf(str, "Line %d, column %d: Operator / cannot be applied to types %s, %s\n", atual->line, atual->filho->column + (int) strlen(atual->filho->valor) + 1, tipo1, tipo2);
+                addErro(str, atual->line, atual->filho->column + strlen(atual->filho->valor) + 1);
                 semanticError = 1;
                 addNota(atual, "undef");
                 return "undef";
@@ -710,9 +723,6 @@ char* anotaAst(no_ast *atual, globalTable *func){
                 return "undef";
             }
         }
-
-        addNota(atual, tipo1);
-        return tipo1;
     }
 
     else if(strcmp(atual->tipo, "And")  == 0 || strcmp(atual->tipo, "Or") == 0){
@@ -722,22 +732,23 @@ char* anotaAst(no_ast *atual, globalTable *func){
         if(strcmp(tipo1, "bool") != 0 || strcmp(tipo2, "bool") != 0){
             if(strcmp(atual->tipo, "And")  == 0){
                 char *str = (char *) malloc(256);
-                sprintf(str, "Line %d, column %d: Operator  cannot be applied to types %s, %s\n", atual->line, atual->column, tipo1, tipo2);
-                addErro(str, atual->line, atual->column);
+                sprintf(str, "Line %d, column %d: Operator && cannot be applied to types %s, %s\n", atual->line, atual->filho->column + (int) strlen(atual->filho->valor) + 1, tipo1, tipo2);
+                addErro(str, atual->line, atual->column + (int) strlen(atual->filho->valor) + 1);
                 semanticError = 1;
             }
             else if(strcmp(atual->tipo, "Or")  == 0){
                 char *str = (char *) malloc(256);
-                sprintf(str, "Line %d, column %d: Operator || cannot be applied to types %s, %s\n", atual->line, atual->column, tipo1, tipo2);
-                addErro(str, atual->line, atual->column);
+                sprintf(str, "Line %d, column %d: Operator || cannot be applied to types %s, %s\n", atual->line, atual->filho->column + (int) strlen(atual->filho->valor) + 1, tipo1, tipo2);
+                addErro(str, atual->line, atual->filho->column + (int) strlen(atual->filho->valor) + 1
+                );
                 semanticError = 1;
             }
             addNota(atual, "undef");
             return "undef";
         }
 
-        addNota(atual, tipo1);
-        return tipo1;
+        addNota(atual, "bool");
+        return "bool";
     }
 
     else if(strcmp(atual->tipo, "Block") == 0){
@@ -823,6 +834,12 @@ char* addNotaId(no_ast *atual, globalTable *func){
 }
 
 char* addNotaFunc(no_ast *atual, globalTable *func){
+    /*printf("%s ",atual->tipo);
+    if(atual->valor){
+        printf("%s",atual->valor);
+    }
+    printf("\n");*/
+    
     // procura a função invocada na lista global
     globalTable *aux = Head;
     
