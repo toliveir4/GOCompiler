@@ -191,7 +191,7 @@ VarsAndStatements:  VarsAndStatements VarDeclaration SEMICOLON  {$$=$1; addirmao
                  | /*Epsilon = NULL*/                           {$$=novoNo("NULL", NULL, line, column  - (int) strlen(yylval.valor));}
                  ;
 
-Statement: IDaux ASSIGN Expr                                    {$$=novoNo("Assign", NULL, $2-line, $2->column);
+Statement: IDaux ASSIGN Expr                                    {$$=novoNo("Assign", NULL, line, column  - (int) strlen(yylval.valor));
                                                                 addfilho($$, $1);
                                                                 addirmao($1, $3);
                                                                 }
