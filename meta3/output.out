@@ -1,3 +1,6 @@
+Line 62, column 37: Operator = cannot be applied to types int, null
+Line 74, column 36: Operator = cannot be applied to types int, null
+Line 145, column 40: Operator = cannot be applied to types int, null
 ===== Global Symbol Table =====
 ia		int
 ib		int
@@ -145,9 +148,9 @@ Program
 ......VarDecl
 ........Int
 ........Id(fafcb)
-......Assign
-........Id(fafcb)
-........IntLit(132)
+......Assign - int
+........Id(fafcb) - int
+........IntLit(132) - int
 ......Return
 ........Id(fafcb)
 ..FuncDecl
@@ -230,7 +233,7 @@ Program
 ........Call
 ..........Id(fcd)
 ......Print
-........Id(safch)
+........Id(safch) - string
 ......If
 ........Id(bb)
 ........Block
@@ -284,8 +287,8 @@ Program
 ..........Id(fcd)
 ........Call
 ..........Id(fce)
-......Assign
-........Id(iafci)
+......Assign - int
+........Id(iafci) - int
 ........Add
 ..........Add
 ............Add
@@ -345,8 +348,8 @@ Program
 ......VarDecl
 ........Int
 ........Id(fcjib)
-......Assign
-........Id(fcjia)
+......Assign - int
+........Id(fcjia) - int
 ........Sub
 ..........Add
 ............Id(ia)
@@ -448,36 +451,36 @@ Program
 ......Id(main)
 ......FuncParams
 ....FuncBody
-......Assign
-........Id(ia)
-........IntLit(1)
-......Assign
-........Id(ib)
-........IntLit(1)
-......Assign
-........Id(ic)
-........IntLit(1)
-......Assign
-........Id(id)
-........IntLit(1)
-......Assign
-........Id(ie)
-........IntLit(1)
-......Assign
-........Id(fa)
-........RealLit(.1)
-......Assign
-........Id(fb)
-........RealLit(.1)
-......Assign
-........Id(fc)
-........RealLit(.1)
-......Assign
-........Id(fd)
-........RealLit(.1)
-......Assign
-........Id(fe)
-........RealLit(.1)
+......Assign - int
+........Id(ia) - int
+........IntLit(1) - int
+......Assign - int
+........Id(ib) - int
+........IntLit(1) - int
+......Assign - int
+........Id(ic) - int
+........IntLit(1) - int
+......Assign - int
+........Id(id) - int
+........IntLit(1) - int
+......Assign - int
+........Id(ie) - int
+........IntLit(1) - int
+......Assign - float32
+........Id(fa) - float32
+........RealLit(.1) - float32
+......Assign - float32
+........Id(fb) - float32
+........RealLit(.1) - float32
+......Assign - float32
+........Id(fc) - float32
+........RealLit(.1) - float32
+......Assign - float32
+........Id(fd) - float32
+........RealLit(.1) - float32
+......Assign - float32
+........Id(fe) - float32
+........RealLit(.1) - float32
 ......VarDecl
 ........Int
 ........Id(mia)
@@ -544,8 +547,8 @@ Program
 ..................Id(ia)
 ..................Call
 ....................Id(fcb)
-......Assign
-........Id(mia)
+......Assign - int
+........Id(mia) - int
 ........Add
 ..........Id(mib)
 ..........Call

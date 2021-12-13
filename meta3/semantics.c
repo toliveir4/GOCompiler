@@ -536,7 +536,7 @@ char* addNotaId(no_ast *atual, globalTable *func){
     funcParams *paramsAux = func->params;
 
     while(paramsAux){
-        if(strcmp(atual->valor, paramsAux->name)){
+        if(strcmp(atual->valor, paramsAux->name) == 0){
             addNota(atual, paramsAux->type);
             return paramsAux->type;
         }
