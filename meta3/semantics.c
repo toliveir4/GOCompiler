@@ -293,15 +293,16 @@ void addFuncLocal(no_ast* atual){
 
     // verifica se existe a funcao na lista global e ainda nao foi declarada
     if(funcP){
-        // percorre 
+        // percorre as operações de uma função
         while(nodeAux){
             if(strcmp(nodeAux->tipo, "VarDecl") == 0){
                 // se for uma declaracao de uma variavel
                 addFuncLocalVar(nodeAux, funcP);
             }
             else if(strcmp(nodeAux->tipo, "NULL") != 0){
-                // se for outra coisa como um assign, return ...
-                //anotaStatementsExpressoes(nodeAux, funcP);
+                // se for outra coisa como um "Assign", "Return" ...
+                // anota 
+                anotaAst(nodeAux, funcP);
             }
 
             nodeAux=nodeAux->irmao;
@@ -415,4 +416,149 @@ int checkLocalVarUsed(no_ast *atual, char *name){
 
     // se encontrar um "Id" e um nome correspondente retorna 1
     return 1;
+}
+
+char* anotaAst(no_ast *atual, globalTable *func){
+    if(strcmp(atual->tipo, "VarDecl") == 0){
+        return "null"; 
+    }
+
+    else if(strcmp(atual->tipo, "Print") == 0){
+        anotaAst(atual->filho, func);
+        return "null"; 
+    }
+
+    else if(strcmp(atual->tipo, "Assign") == 0){
+        char *tipo1 = anotaAst(atual->filho, func);
+        char *tipo2 = anotaAst(atual->filho->irmao, func);
+
+        // se uma das variaveis  ou ambas não tiverem tipo
+        if(strcmp(tipo1, "undef") == 0 || strcmp(tipo2, "undef") == 0){
+            printf("Line %d, column %d: Operator = cannot be applied to types %s, %s\n", atual->line, atual->column, tipo1, tipo2);
+            addNota(atual, "undef");
+            return "undef";
+        }
+
+        // se as duas variáveis não tiverem o mesmo tipo
+        if(strcmp(tipo1, tipo2) != 0){
+            printf("Line %d, column %d: Operator = cannot be applied to types %s, %s\n", atual->line, atual->column, tipo1, tipo2);               
+            addNota(atual, tipo1);
+            return tipo1;
+        }
+
+        // sao as duas do mesmo tipo logo não há erros
+        addNota(atual, tipo1);
+        return tipo1;
+    }
+
+    else if(strcmp(atual->tipo, "ParseArgs") == 0){
+        char *tipo1 = anotaAst(atual->filho, func);
+        char *tipo2 = anotaAst(atual->filho->irmao, func);
+
+        // "Parse Args" só funciona com dois int's
+        if(strcmp(tipo1, "int") != 0 || strcmp(tipo2, "int") != 0){
+            printf("Line %d, column %d: Operator strconv.Atoi cannot be applied to types %s, %s\n", atual->line, atual->column, tipo1, tipo2);
+            addNota(atual, "undef");
+            return "undef";
+        }
+
+        addNota(atual, "int");
+        return "int";
+    }
+
+    else if(strcmp(atual->tipo, "Return") == 0){
+    }
+
+    else if(strcmp(atual->tipo, "Not") == 0){
+    }
+
+    else if(strcmp(atual->tipo, "Minus")  == 0 || strcmp(atual->tipo, "Plus") == 0){
+    }
+    
+    else if(strcmp(atual->tipo, "If") == 0){
+    }
+
+    else if(strcmp(atual->tipo, "For") == 0){
+    }
+
+    else if(strcmp(atual->tipo, "Call") == 0){
+    }
+
+    else if(strcmp(atual->tipo, "Eq")  == 0 || strcmp(atual->tipo, "Lt")  == 0 || strcmp(atual->tipo, "Gt")  == 0 || strcmp(atual->tipo, "Ne")  == 0 || strcmp(atual->tipo, "Le")  == 0 || strcmp(atual->tipo, "Ge") == 0){
+    }
+
+    else if(strcmp(atual->tipo, "Add")  == 0 || strcmp(atual->tipo, "Sub")  == 0 || strcmp(atual->tipo, "Mul")  == 0 || strcmp(atual->tipo, "Div")  == 0 || strcmp(atual->tipo, "Mod") == 0){
+    }
+
+    else if(strcmp(atual->tipo, "And")  == 0 || strcmp(atual->tipo, "Orb") == 0){
+    }
+
+    else if(strcmp(atual->tipo, "Block") == 0){
+    }
+
+    else if(strcmp(atual->tipo, "StrLit") == 0){
+        addNota(atual, "string");
+        return "string"; 
+    }
+
+    else if(strcmp(atual->tipo, "RealLit") == 0){
+        addNota(atual, "float32");
+        return "float32"; 
+    }
+
+    else if(strcmp(atual->tipo, "IntLit") == 0){
+        addNota(atual, "int");
+        return "int";
+    }
+
+    else if(strcmp(atual->tipo, "Id") == 0){
+        char *r = addNotaId(atual, func);
+        return r;
+    }
+
+    return "null";
+}
+
+char* addNotaId(no_ast *atual, globalTable *func){
+    // procura nome nas variaveis locais
+    funcVars *varsAux = func->vars;
+
+    while(varsAux){
+        if(strcmp(atual->valor, varsAux->name) == 0){
+            addNota(atual, varsAux->type);
+            return varsAux->type;
+        }
+
+        varsAux = varsAux->next;
+    }
+
+    // procura nome nos parametros da funcao
+    funcParams *paramsAux = func->params;
+
+    while(paramsAux){
+        if(strcmp(atual->valor, paramsAux->name)){
+            addNota(atual, paramsAux->type);
+            return paramsAux->type;
+        }
+
+        paramsAux = paramsAux->next;
+    }
+
+    // procura nome nas variaveis globais
+    globalTable *aux = Head;
+
+    while(aux){
+        if(strcmp(atual->valor, aux->name) == 0 && !aux->func){
+            addNota(atual, aux->type);
+            return aux->type;
+        }
+
+        aux = aux->next;
+    }
+
+    // não encontrou a variável em lado nenhum
+    printf("Line %d, column %d: Cannot find symbol %s\n", atual->line, atual->column, atual->valor);
+
+    addNota(atual, "undef");
+    return "undef";
 }

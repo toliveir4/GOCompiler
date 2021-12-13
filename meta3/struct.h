@@ -26,5 +26,6 @@ void addirmao(no_ast* no, no_ast * novoirmao);
 void addfilho(no_ast *no, no_ast *filho);
 void printAST(no_ast *no, int nivel);
 void freeAST(no_ast *no);
+void addNota(no_ast *no, char* nota);
 
 #endif //!STRUCT_H

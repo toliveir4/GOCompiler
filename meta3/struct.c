@@ -92,3 +92,7 @@ void freeAST(no_ast *no)
     free(no->valor);
     free(no);
 }
+
+void addNota(no_ast *no, char* nota){
+    no->nota = (char *) strdup(nota);
+}

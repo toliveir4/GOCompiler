@@ -40,5 +40,8 @@ void addFuncLocal(no_ast* atual);
 globalTable* getFuncPointer(char* name);
 void addFuncLocalVar(no_ast *atual, globalTable *func);
 int checkLocalVarUsed(no_ast *atual, char *name);
+char* anotaAst(no_ast *atual, globalTable *func);
+char* getType(no_ast *atual, globalTable *func);
+char* addNotaId(no_ast *atual, globalTable *func);
 
 #endif //!SEMANTICS_H
