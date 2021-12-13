@@ -30,6 +30,13 @@ typedef struct funcVars{ // representa uma lista ligada de parametros de uma fun
     struct funcVars *next;
 } funcVars;
 
+typedef struct erros{
+    int linha;
+    int column;
+    char *erro;
+    struct erros *next;
+} erros;
+
 void criaTabelas(no_ast* atual);
 void printTabelas();
 void addFunc(no_ast* atual);
@@ -43,5 +50,7 @@ int checkLocalVarUsed(no_ast *atual, char *name);
 char* anotaAst(no_ast *atual, globalTable *func);
 char* addNotaId(no_ast *atual, globalTable *func);
 char* addNotaFunc(no_ast *atual, globalTable *func);
+void addErro(char *s, int linha, int column);
+void printErros();
 
 #endif //!SEMANTICS_H
