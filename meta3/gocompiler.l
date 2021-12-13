@@ -19,6 +19,7 @@
 
     extern int syntaxError; // True se existirem erros de compilação
     extern no_ast* root; // No da arvore AST
+    extern int semanticError;
 %}
 
 STRLIT		\"([^\n\r\\\"]|{ESCAPE})*\" 
@@ -135,8 +136,10 @@ int main(int argc, char* argv[])
             yyparse();
             if (!syntaxError){
                 criaTabelas(root);
-                printTabelas();
-                printAST(root,0);
+                if(!semanticError){
+                    printTabelas();
+                    printAST(root,0);
+                }
             }
         }
         // No flags

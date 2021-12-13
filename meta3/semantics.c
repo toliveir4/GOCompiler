@@ -7,6 +7,8 @@
 
 globalTable *Head =NULL;
 
+int semanticError = 0;
+
 void criaTabelas(no_ast* atual){
     atual = atual->filho; // salta "Program"
     no_ast* globalHead = atual; // guarda o inicio da lista de funções e variaveis globais
@@ -191,6 +193,7 @@ void addFuncParams(no_ast* atual, globalTable* func){
             if(strcmp(aux->name, nodeAux->filho->irmao->valor) == 0){
                 flag = 1;
                 printf("Line %d, column %d: Symbol %s already defined\n", nodeAux->filho->irmao->line, nodeAux->filho->irmao->column, nodeAux->filho->irmao->valor);
+                semanticError = 1;
             }
             aux = aux->next;
         }
@@ -279,6 +282,7 @@ int existsGlobal(char *name, no_ast *atual){
         // percorre a lista global e compara os nomes
         if(strcmp(name, aux->name) == 0){
             printf("Line %d, column %d: Symbol %s already defined\n", atual->line, atual->column, name);
+            semanticError = 1;
             return 1;
         }
 
@@ -338,6 +342,7 @@ void addFuncLocalVar(no_ast *atual, globalTable *func){
     while(paramsAux){
         if(strcmp(paramsAux->name, aux->valor) == 0){
             printf("Line %d, column %d: Symbol %s already defined\n", aux->line, aux->column, aux->valor);
+            semanticError = 1;
             return;
         }
 
@@ -362,6 +367,7 @@ void addFuncLocalVar(no_ast *atual, globalTable *func){
         // verifica se a variavel e utilizada
         if (checkLocalVarUsed(atual->irmao, varsAux->name) == 0){
             printf("Line %d, column %d: Symbol %s declared but never used\n", aux->line, aux->column, varsAux->name);
+            semanticError = 1;
         }
 
         return;
@@ -371,6 +377,7 @@ void addFuncLocalVar(no_ast *atual, globalTable *func){
     while(varsAux){
         if(strcmp(varsAux->name, aux->valor) == 0){
             printf("Line %d, column %d: Symbol %s already defined\n", aux->line, aux->column, aux->valor);
+            semanticError = 1;
             return;
         }
 
@@ -393,6 +400,7 @@ void addFuncLocalVar(no_ast *atual, globalTable *func){
     // verifica se a variavel e utilizada
     if (checkLocalVarUsed(atual->irmao, varsAux->name) == 0){
         printf("Line %d, column %d: Symbol %s declared but never used\n", aux->line, aux->column, varsAux->name);
+        semanticError = 1;
     }
 }
 
@@ -435,13 +443,15 @@ char* anotaAst(no_ast *atual, globalTable *func){
         // se uma das variaveis  ou ambas não tiverem tipo
         if(strcmp(tipo1, "undef") == 0 || strcmp(tipo2, "undef") == 0){
             printf("Line %d, column %d: Operator = cannot be applied to types %s, %s\n", atual->line, atual->column, tipo1, tipo2);
+            semanticError = 1;
             addNota(atual, "undef");
             return "undef";
         }
 
         // se as duas variáveis não tiverem o mesmo tipo
         if(strcmp(tipo1, tipo2) != 0){
-            printf("Line %d, column %d: Operator = cannot be applied to types %s, %s\n", atual->line, atual->column, tipo1, tipo2);               
+            printf("Line %d, column %d: Operator = cannot be applied to types %s, %s\n", atual->line, atual->column, tipo1, tipo2);  
+            semanticError = 1;             
             addNota(atual, tipo1);
             return tipo1;
         }
@@ -458,6 +468,7 @@ char* anotaAst(no_ast *atual, globalTable *func){
         // "Parse Args" só funciona com dois int's
         if(strcmp(tipo1, "int") != 0 || strcmp(tipo2, "int") != 0){
             printf("Line %d, column %d: Operator strconv.Atoi cannot be applied to types %s, %s\n", atual->line, atual->column, tipo1, tipo2);
+            semanticError = 1;
             addNota(atual, "undef");
             return "undef";
         }
@@ -467,33 +478,218 @@ char* anotaAst(no_ast *atual, globalTable *func){
     }
 
     else if(strcmp(atual->tipo, "Return") == 0){
+        // verifica se o return tem filho
+        if(atual->filho){
+            char *tipo = anotaAst(atual->filho, func);
+
+            // verifica se o tipo do return corresponde ao da função
+            if(strcmp(tipo, func->type) != 0){
+                printf("Line %d, column %d: Incompatible type %s in return statement\n", atual->line, atual->column, tipo);
+                semanticError = 1;
+            }
+        }
+        else{
+            // verifica se os returns coincidem
+            if(strcmp("none", func->type) != 0){
+                printf("Line %d, column %d: Incompatible type none in return statement\n", atual->line, atual->column);
+                semanticError = 1;
+            }
+        }
     }
 
     else if(strcmp(atual->tipo, "Not") == 0){
+        char *tipo = anotaAst(atual->filho, func);
+
+        if(strcmp(tipo, "bool") != 0){
+            printf("Line %d, column %d: Operator ! cannot be applied to type %s\n", atual->line, atual->column, tipo);
+            semanticError = 1;
+            addNota(atual, "undef");
+            return "undef";
+        }
+
+        addNota(atual, tipo);
+        return tipo;
     }
 
     else if(strcmp(atual->tipo, "Minus")  == 0 || strcmp(atual->tipo, "Plus") == 0){
+        char *tipo = anotaAst(atual->filho, func);
+
+        // se for do tipo "StrLit" ou "String"
+        if(strcmp(tipo, "int") != 0 && strcmp(tipo, "float32") != 0){
+            if(strcmp(atual->tipo, "Minus") == 0){
+                printf("Line %d, column %d: Operator - cannot be applied to type %s\n", atual->line, atual->column, tipo);
+                semanticError = 1;
+                addNota(atual, "undef");
+                return "undef";
+            }
+            else if(strcmp(atual->tipo, "Minus") == 0){
+                printf("Line %d, column %d: Operator + cannot be applied to type %s\n", atual->line, atual->column, tipo);
+                semanticError = 1;
+                addNota(atual, "undef");
+                return "undef";
+            }
+        }
+
+        addNota(atual, tipo);
+        return tipo;
     }
     
     else if(strcmp(atual->tipo, "If") == 0){
+        char *tipo = anotaAst(atual->filho, func);
+
+        if(strcmp(tipo, "bool") != 0){
+            printf("Line %d, column %d: Incompatible type %s in if statement\n", atual->line, atual->column, tipo);
+            semanticError = 1;
+            return "null";
+        }
+
+        // chama o "Block" do if para anotar
+        anotaAst(atual->filho->irmao, func);
+
+        // chama o "Block" do else apesar de poder estar vazio
+        anotaAst(atual->filho->irmao->irmao, func);
     }
 
     else if(strcmp(atual->tipo, "For") == 0){
+        char *tipo = anotaAst(atual->filho, func);
+
+        if(strcmp(tipo, "bool") != 0){
+            printf("Line %d, column %d: Operator for be applied to type %s\n", atual->line, atual->column, tipo);
+            semanticError = 1;
+            return "null";
+        }
+
+        // chama o "Block" para anotar
+        anotaAst(atual->filho->irmao, func);
     }
 
     else if(strcmp(atual->tipo, "Call") == 0){
+        char *tipo = addNotaFunc(atual->filho, func);
+
+        addNota(atual, tipo);
+        return tipo;
     }
 
     else if(strcmp(atual->tipo, "Eq")  == 0 || strcmp(atual->tipo, "Lt")  == 0 || strcmp(atual->tipo, "Gt")  == 0 || strcmp(atual->tipo, "Ne")  == 0 || strcmp(atual->tipo, "Le")  == 0 || strcmp(atual->tipo, "Ge") == 0){
+        char *tipo1 = anotaAst(atual->filho, func);
+        char *tipo2 = anotaAst(atual->filho->irmao, func);
+
+        if((strcmp(tipo1, "int") != 0 && strcmp(tipo1, "float32") != 0 && strcmp(tipo1, "bool") != 0) || ((strcmp(tipo2, "int") != 0 && strcmp(tipo2, "float32") != 0 && strcmp(tipo2, "bool") != 0))){
+            if(strcmp(atual->tipo, "Eq") == 0){
+                printf("Line %d, column %d: Operator == be applied to types %s %s\n", atual->line, atual->column, tipo1, tipo2);
+                semanticError = 1;
+                addNota(atual, "undef");
+                return "undef";
+            }
+            else if(strcmp(atual->tipo, "Lt") == 0){
+                printf("Line %d, column %d: Operator < be applied to types %s %s\n", atual->line, atual->column, tipo1, tipo2);
+                semanticError = 1;
+                addNota(atual, "undef");
+                return "undef";
+            }
+            else if(strcmp(atual->tipo, "Gt") == 0){
+                printf("Line %d, column %d: Operator > be applied to types %s %s\n", atual->line, atual->column, tipo1, tipo2);
+                semanticError = 1;
+                addNota(atual, "undef");
+                return "undef";
+            }
+            else if(strcmp(atual->tipo, "Le") == 0){
+                printf("Line %d, column %d: Operator <= be applied to types %s %s\n", atual->line, atual->column, tipo1, tipo2);
+                semanticError = 1;
+                addNota(atual, "undef");
+                return "undef";
+            }
+            else if(strcmp(atual->tipo, "Ge") == 0){
+                printf("Line %d, column %d: Operator >= be applied to types %s %s\n", atual->line, atual->column, tipo1, tipo2);
+                semanticError = 1;
+                addNota(atual, "undef");
+                return "undef";
+            }
+            else if(strcmp(atual->tipo, "Ne") == 0){
+                printf("Line %d, column %d: Operator != be applied to types %s %s\n", atual->line, atual->column, tipo1, tipo2);
+                semanticError = 1;
+                addNota(atual, "undef");
+                return "undef";
+            }
+        }
+
+        addNota(atual, "bool");
+        return "bool";
     }
 
     else if(strcmp(atual->tipo, "Add")  == 0 || strcmp(atual->tipo, "Sub")  == 0 || strcmp(atual->tipo, "Mul")  == 0 || strcmp(atual->tipo, "Div")  == 0 || strcmp(atual->tipo, "Mod") == 0){
+        char *tipo1 = anotaAst(atual->filho, func);
+        char *tipo2 = anotaAst(atual->filho->irmao, func);
+
+        if((strcmp(tipo1, "int") != 0 && strcmp(tipo1, "float32") != 0) || ((strcmp(tipo2, "int") != 0 && strcmp(tipo2, "float32") != 0)) || strcmp(tipo1, tipo2) != 0){
+            if(strcmp(atual->tipo, "Add") == 0){
+                printf("Line %d, column %d: Operator + be applied to types %s %s\n", atual->line, atual->column, tipo1, tipo2);
+                semanticError = 1;
+                addNota(atual, "undef");
+                return "undef";
+            }
+            else if(strcmp(atual->tipo, "Sub") == 0){
+                printf("Line %d, column %d: Operator - be applied to types %s %s\n", atual->line, atual->column, tipo1, tipo2);
+                semanticError = 1;
+                addNota(atual, "undef");
+                return "undef";
+            }
+            else if(strcmp(atual->tipo, "Mul") == 0){
+                printf("Line %d, column %d: Operator * be applied to types %s %s\n", atual->line, atual->column, tipo1, tipo2);
+                semanticError = 1;
+                addNota(atual, "undef");
+                return "undef";
+            }
+            else if(strcmp(atual->tipo, "Div") == 0){
+                printf("Line %d, column %d: Operator / be applied to types %s %s\n", atual->line, atual->column, tipo1, tipo2);
+                semanticError = 1;
+                addNota(atual, "undef");
+                return "undef";
+            }
+            else if(strcmp(atual->tipo, "Mod") == 0){
+                printf("Line %d, column %d: Operator %% be applied to types %s %s\n", atual->line, atual->column, tipo1, tipo2);
+                semanticError = 1;
+                addNota(atual, "undef");
+                return "undef";
+            }
+        }
+
+        addNota(atual, tipo1);
+        return tipo1;
     }
 
-    else if(strcmp(atual->tipo, "And")  == 0 || strcmp(atual->tipo, "Orb") == 0){
+    else if(strcmp(atual->tipo, "And")  == 0 || strcmp(atual->tipo, "Or") == 0){
+        char *tipo1 = anotaAst(atual->filho, func);
+        char *tipo2 = anotaAst(atual->filho->irmao, func);
+
+        if(strcmp(tipo1, "bool") != 0 || strcmp(tipo2, "bool") != 0){
+            if(strcmp(atual->tipo, "And")  == 0){
+                printf("Line %d, column %d: Operator && cannot be applied to types %s, %s\n", atual->line, atual->column, tipo1, tipo2);
+                semanticError = 1;
+            }
+            else if(strcmp(atual->tipo, "Or")  == 0){
+                printf("Line %d, column %d: Operator || cannot be applied to types %s, %s\n", atual->line, atual->column, tipo1, tipo2);
+                semanticError = 1;
+            }
+            addNota(atual, "undef");
+            return "undef";
+        }
+
+        addNota(atual, tipo1);
+        return tipo1;
     }
 
     else if(strcmp(atual->tipo, "Block") == 0){
+        // se tiver filho
+        if(atual->filho){
+            no_ast *aux = atual->filho;
+            
+            // percorre o block inteiro
+            while(aux){
+                anotaAst(aux, func);
+                aux = aux->irmao;
+            }
+        }
     }
 
     else if(strcmp(atual->tipo, "StrLit") == 0){
@@ -558,7 +754,101 @@ char* addNotaId(no_ast *atual, globalTable *func){
 
     // não encontrou a variável em lado nenhum
     printf("Line %d, column %d: Cannot find symbol %s\n", atual->line, atual->column, atual->valor);
+    semanticError = 1;
+    addNota(atual, "undef");
+    return "undef";
+}
 
+char* addNotaFunc(no_ast *atual, globalTable *func){
+    // procura a função invocada na lista global
+    globalTable *aux = Head;
+    
+    while(aux){
+        if(aux->func && strcmp(aux->name, atual->valor) == 0){
+            // se encontrar a função
+            no_ast *noAux = atual->irmao;
+            funcParams *paramsAux = aux->params;
+
+            int given = 0, needed = 0; // usados para verificar se o numero de parametros fornecidos e precisos coincidem
+            int error = 0; // usado para ver se há erros nos tipos
+            char s[128];
+            strcpy(s, "(");
+
+            while(noAux || paramsAux){
+                char *tipo;
+
+                // adiciona os tipos à string
+                if(noAux){
+                    tipo = anotaAst(noAux, func);
+
+                    if(strcmp(s, "(") == 0){
+                        strcat(s, tipo);
+                    }
+                    else{
+                        strcat(s, ",");
+                        strcat(s, tipo);
+                    }
+                }
+                // verifica se os tipos dos dados fornecidos estão corretos
+                if(noAux && paramsAux && strcmp(tipo, paramsAux->type) != 0){
+                    error = 1;
+                }
+                // conta o numero de parametros dados
+                if(noAux){
+                    given++;
+                    noAux = noAux->irmao;
+                }
+                // conta o numero de parametros precisos
+                if(paramsAux){
+                    needed++;
+                    paramsAux = paramsAux->next;
+                }
+            }
+            // termina a string dos tipos
+            strcat(s, ")");
+
+            // se nao houve erros
+            if(given == needed && error == 0){
+                addNota(atual, s);
+                return aux->type;
+            }
+
+            printf("Line %d, column %d: Cannot find symbol %s%s\n", atual->line, atual->column, atual->valor, s);
+            semanticError = 1;
+            addNota(atual, "undef");
+            return "undef";
+        }
+
+        aux = aux->next;
+    }
+    //se a funcao nao existir tem que se anotar a arvore na mesma
+    no_ast *noAux = atual->irmao;
+    char s[128];
+    strcpy(s, "(");
+
+    while(noAux){
+        char *tipo;
+
+        // adiciona os tipos à string
+        if(noAux){
+            tipo = anotaAst(noAux, func);
+
+            if(strcmp(s, "(") == 0){
+                strcat(s, tipo);
+            }
+            else{
+                strcat(s, ",");
+                strcat(s, tipo);
+            }
+        }
+
+        noAux = noAux->irmao;
+    }
+    // termina a string dos tipos
+    strcat(s, ")");
+
+    printf("Line %d, column %d: Cannot find symbol %s%s\n", atual->line, atual->column, atual->valor, s);
+    semanticError = 1;
     addNota(atual, "undef");
     return "undef";
 }
