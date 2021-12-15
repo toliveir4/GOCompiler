@@ -43,52 +43,59 @@ RESERVED            break|default|interface|select|case|defer|go|map|struct|chan
 %x LINE_COMMENT GENERAL_COMMENT STRLIT_ERROR
 %%
 
-";"         {if (_l) printf("SEMICOLON\n"); flag = 0; COLUMN; straux = yytext; free(yylval.valor); yylval.valor = (char*) strdup(yytext); if (_t) return SEMICOLON;}
-","         {if (_l) printf("COMMA\n"); flag = 0; COLUMN; straux = yytext; free(yylval.valor); yylval.valor = (char*) strdup(yytext); if (_t) return COMMA;}
-"="         {if (_l) printf("ASSIGN\n"); flag = 0; COLUMN; straux = yytext; free(yylval.valor); yylval.valor = (char*) strdup(yytext); if (_t) return ASSIGN;}
-"*"         {if (_l) printf("STAR\n"); flag = 0; COLUMN; straux = yytext; free(yylval.valor); yylval.valor = (char*) strdup(yytext); if (_t) return STAR;}
-"/"         {if (_l) printf("DIV\n"); flag = 0; COLUMN; straux = yytext; free(yylval.valor); yylval.valor = (char*) strdup(yytext); if (_t) return DIV;}
-{MINUS}     {if (_l) printf("MINUS\n"); flag = 0; COLUMN; straux = yytext; free(yylval.valor); yylval.valor = (char*) strdup(yytext); if (_t) return MINUS;}
-{PLUS}      {if (_l) printf("PLUS\n"); flag = 0; COLUMN; straux = yytext; free(yylval.valor); yylval.valor = (char*) strdup(yytext); if (_t) return PLUS;}
-"=="        {if (_l) printf("EQ\n"); flag = 0; COLUMN; straux = yytext; free(yylval.valor); yylval.valor = (char*) strdup(yytext); if (_t) return EQ;}
-">="        {if (_l) printf("GE\n"); flag = 0; COLUMN; straux = yytext; free(yylval.valor); yylval.valor = (char*) strdup(yytext); if (_t) return GE;}
-">"         {if (_l) printf("GT\n"); flag = 0; COLUMN; straux = yytext; free(yylval.valor); yylval.valor = (char*) strdup(yytext); if (_t) return GT;}
-"<="        {if (_l) printf("LE\n"); flag = 0; COLUMN; straux = yytext; free(yylval.valor); yylval.valor = (char*) strdup(yytext); if (_t) return LE;}
-"<"         {if (_l) printf("LT\n"); flag = 0; COLUMN; straux = yytext; free(yylval.valor); yylval.valor = (char*) strdup(yytext); if (_t) return LT;}
-"%"         {if (_l) printf("MOD\n"); flag = 0; COLUMN; straux = yytext; free(yylval.valor); yylval.valor = (char*) strdup(yytext); if (_t) return MOD;}
-"!="        {if (_l) printf("NE\n"); flag = 0; COLUMN; straux = yytext; free(yylval.valor); yylval.valor = (char*) strdup(yytext); if (_t) return NE;}
-"!"         {if (_l) printf("NOT\n"); flag = 0; COLUMN; straux = yytext; free(yylval.valor); yylval.valor = (char*) strdup(yytext); if (_t) return NOT;}
-"&&"        {if (_l) printf("AND\n"); flag = 0; COLUMN; straux = yytext; free(yylval.valor); yylval.valor = (char*) strdup(yytext); if (_t) return AND;}
-"||"        {if (_l) printf("OR\n"); flag = 0; COLUMN; straux = yytext; free(yylval.valor); yylval.valor = (char*) strdup(yytext); if (_t) return OR;}
-"{"         {if (_l) printf("LBRACE\n"); flag = 0; COLUMN; straux = yytext; free(yylval.valor); yylval.valor = (char*) strdup(yytext); if (_t) return LBRACE;}
-"("         {if (_l) printf("LPAR\n"); flag = 0; COLUMN; straux = yytext; free(yylval.valor); yylval.valor = (char*) strdup(yytext); if (_t) return LPAR;}
-"["         {if (_l) printf("LSQ\n"); flag = 0; COLUMN; straux = yytext; free(yylval.valor); yylval.valor = (char*) strdup(yytext); if (_t) return LSQ;}
-"}"         {if (_l) printf("RBRACE\n"); flag = 1; COLUMN; straux = yytext; free(yylval.valor); yylval.valor = (char*) strdup(yytext); if (_t) return RBRACE;}
-")"         {if (_l) printf("RPAR\n"); flag = 1; COLUMN; straux = yytext; free(yylval.valor); yylval.valor = (char*) strdup(yytext); if (_t) return RPAR;}
-"]"         {if (_l) printf("RSQ\n"); flag = 1; COLUMN; straux = yytext; free(yylval.valor); yylval.valor = (char*) strdup(yytext); if (_t) return RSQ;}
-"package"   {if (_l) printf("PACKAGE\n"); flag = 0; COLUMN; straux = yytext; free(yylval.valor); yylval.valor = (char*) strdup(yytext); if (_t) return PACKAGE;}
-"return"    {if (_l) printf("RETURN\n"); flag = 1; COLUMN; straux = yytext; free(yylval.valor); yylval.valor = (char*) strdup(yytext); if (_t) return RETURN;}
-"else"      {if (_l) printf("ELSE\n"); flag = 0; COLUMN; straux = yytext; free(yylval.valor); yylval.valor = (char*) strdup(yytext); if (_t) return ELSE;}
-"for"       {if (_l) printf("FOR\n"); flag = 0; COLUMN; straux = yytext; free(yylval.valor); yylval.valor = (char*) strdup(yytext); if (_t) return FOR;}
-"if"        {if (_l) printf("IF\n"); flag = 0; COLUMN; straux = yytext; free(yylval.valor); yylval.valor = (char*) strdup(yytext); if (_t) return IF;}
-"var"       {if (_l) printf("VAR\n"); flag = 0; COLUMN; straux = yytext; free(yylval.valor); yylval.valor = (char*) strdup(yytext); if (_t) return VAR;}
-"int"       {if (_l) printf("INT\n"); flag = 0; COLUMN; straux = yytext; free(yylval.valor); yylval.valor = (char*) strdup(yytext); if (_t) return INT;}
-"float32"   {if (_l) printf("FLOAT32\n"); flag = 0; COLUMN; straux = yytext; free(yylval.valor); yylval.valor = (char*) strdup(yytext); if (_t) return FLOAT32;}
-"bool"      {if (_l) printf("BOOL\n"); flag = 0; COLUMN; straux = yytext; free(yylval.valor); yylval.valor = (char*) strdup(yytext); if (_t) return BOOL;}
-"string"    {if (_l) printf("STRING\n"); flag = 0; COLUMN; straux = yytext; free(yylval.valor); yylval.valor = (char*) strdup(yytext); if (_t) return STRING;}
-"fmt.Println"    {if (_l) printf("PRINT\n"); flag = 0; COLUMN; straux = yytext; free(yylval.valor); yylval.valor = (char*) strdup(yytext); if (_t) return PRINT;}
-"strconv.Atoi"   {if (_l) printf("PARSEINT\n"); flag = 0; COLUMN; straux = yytext; free(yylval.valor); yylval.valor = (char*) strdup(yytext); if (_t) return PARSEINT;}
-"func"           {if (_l) printf("FUNC\n"); flag = 0; COLUMN; straux = yytext; free(yylval.valor); yylval.valor = (char*) strdup(yytext); if (_t) return FUNC;}
-"os.Args"        {if (_l) printf("CMDARGS\n"); flag = 0; COLUMN; straux = yytext; free(yylval.valor); yylval.valor = (char*) strdup(yytext); if (_t) return CMDARGS;}
-{RESERVED}       {if (_l) printf("RESERVED(%s)\n", yytext); flag = 0; COLUMN; straux = yytext; free(yylval.valor); yylval.valor = (char*) strdup(yytext); if (_t) return RESERVED;}
-"_"         {if (_l) printf("BLANKID\n"); flag = 0; COLUMN; straux = yytext; free(yylval.valor); yylval.valor = (char*) strdup(yytext); if (_t) return BLANKID;}
+";"         {if (_l) printf("SEMICOLON\n"); flag = 0; COLUMN; if (_t){ straux = yytext; yylval.valor = (char*) strdup(yytext); return SEMICOLON;}}
 
-{REALLIT}           {if (_l) printf("REALLIT(%s)\n", yytext); flag = 1; COLUMN; straux = yytext; free(yylval.valor); yylval.valor = (char*) strdup(yytext); if (_t) return REALLIT;}
-{INTLIT}            {if (_l) printf("INTLIT(%s)\n", yytext); flag = 1; COLUMN; straux = yytext; free(yylval.valor); yylval.valor = (char*) strdup(yytext); if (_t) return INTLIT;}
+","         {if (_l) printf("COMMA\n"); flag = 0; COLUMN; if (_t){ straux = yytext; yylval.no = novoNo("NULL", NULL, line, column - yyleng); return COMMA;}}
+"="         {if (_l) printf("ASSIGN\n"); flag = 0; COLUMN; if (_t){ straux = yytext; yylval.no = novoNo("NULL", NULL, line, column - yyleng); return ASSIGN;}}
+"*"         {if (_l) printf("STAR\n"); flag = 0; COLUMN; if (_t){ straux = yytext; yylval.no = novoNo("NULL", NULL, line, column - yyleng); return STAR;}}
+"/"         {if (_l) printf("DIV\n"); flag = 0; COLUMN; if (_t){ straux = yytext; yylval.no = novoNo("NULL", NULL, line, column - yyleng); return DIV;}}
+{MINUS}     {if (_l) printf("MINUS\n"); flag = 0; COLUMN; if (_t){ straux = yytext; yylval.no = novoNo("NULL", NULL, line, column - yyleng); return MINUS;}}
+{PLUS}      {if (_l) printf("PLUS\n"); flag = 0; COLUMN; if (_t){ straux = yytext; yylval.no = novoNo("NULL", NULL, line, column - yyleng); return PLUS;}}
+"=="        {if (_l) printf("EQ\n"); flag = 0; COLUMN; if (_t){ straux = yytext; yylval.no = novoNo("NULL", NULL, line, column - yyleng); return EQ;}}
+">="        {if (_l) printf("GE\n"); flag = 0; COLUMN; if (_t){ straux = yytext; yylval.no = novoNo("NULL", NULL, line, column - yyleng); return GE;}}
+">"         {if (_l) printf("GT\n"); flag = 0; COLUMN; if (_t){ straux = yytext; yylval.no = novoNo("NULL", NULL, line, column - yyleng); return GT;}}
+"<="        {if (_l) printf("LE\n"); flag = 0; COLUMN; if (_t){ straux = yytext; yylval.no = novoNo("NULL", NULL, line, column - yyleng); return LE;}}
+"<"         {if (_l) printf("LT\n"); flag = 0; COLUMN; if (_t){ straux = yytext; yylval.no = novoNo("NULL", NULL, line, column - yyleng); return LT;}}
+"%"         {if (_l) printf("MOD\n"); flag = 0; COLUMN; if (_t){ straux = yytext; yylval.no = novoNo("NULL", NULL, line, column - yyleng); return MOD;}}
+"!="        {if (_l) printf("NE\n"); flag = 0; COLUMN; if (_t){ straux = yytext; yylval.no = novoNo("NULL", NULL, line, column - yyleng); return NE;}}
+"!"         {if (_l) printf("NOT\n"); flag = 0; COLUMN; if (_t){ straux = yytext; yylval.no = novoNo("NULL", NULL, line, column - yyleng); return NOT;}}
+"&&"        {if (_l) printf("AND\n"); flag = 0; COLUMN; if (_t){ straux = yytext; yylval.no = novoNo("NULL", NULL, line, column - yyleng); return AND;}}
+"||"        {if (_l) printf("OR\n"); flag = 0; COLUMN; if (_t){ straux = yytext; yylval.no = novoNo("NULL", NULL, line, column - yyleng); return OR;}}
+
+"{"         {if (_l) printf("LBRACE\n"); flag = 0; COLUMN; if (_t){ straux = yytext; yylval.valor = (char*) strdup(yytext); return LBRACE;}}
+"("         {if (_l) printf("LPAR\n"); flag = 0; COLUMN; if (_t){ straux = yytext; yylval.valor = (char*) strdup(yytext); return LPAR;}}
+"["         {if (_l) printf("LSQ\n"); flag = 0; COLUMN; if (_t){ straux = yytext; yylval.valor = (char*) strdup(yytext); return LSQ;}}
+"}"         {if (_l) printf("RBRACE\n"); flag = 1; COLUMN; if (_t){ straux = yytext; yylval.valor = (char*) strdup(yytext); return RBRACE;}}
+")"         {if (_l) printf("RPAR\n"); flag = 1; COLUMN; if (_t){ straux = yytext; yylval.valor = (char*) strdup(yytext); return RPAR;}}
+"]"         {if (_l) printf("RSQ\n"); flag = 1; COLUMN; if (_t){ straux = yytext; yylval.valor = (char*) strdup(yytext); return RSQ;}}
+"package"   {if (_l) printf("PACKAGE\n"); flag = 0; COLUMN; if (_t){ straux = yytext; yylval.valor = (char*) strdup(yytext); return PACKAGE;}}
+
+"return"    {if (_l) printf("RETURN\n"); flag = 1; COLUMN; if (_t){ straux = yytext; yylval.no = novoNo("NULL", NULL, line, column - yyleng); return RETURN;}}
+
+"for"       {if (_l) printf("FOR\n"); flag = 0; COLUMN; if (_t){ straux = yytext; yylval.no = novoNo("NULL", NULL, line, column - yyleng); return FOR;}}
+"if"        {if (_l) printf("IF\n"); flag = 0; COLUMN; if (_t){ straux = yytext; yylval.no = novoNo("NULL", NULL, line, column - yyleng); return IF;}}
+
+"else"      {if (_l) printf("ELSE\n"); flag = 0; COLUMN; if (_t){ straux = yytext; yylval.valor = (char*) strdup(yytext); return ELSE;}}
+"var"       {if (_l) printf("VAR\n"); flag = 0; COLUMN; if (_t){ straux = yytext; yylval.valor = (char*) strdup(yytext); return VAR;}}
+"int"       {if (_l) printf("INT\n"); flag = 0; COLUMN; if (_t){ straux = yytext; yylval.valor = (char*) strdup(yytext); return INT;}}
+"float32"   {if (_l) printf("FLOAT32\n"); flag = 0; COLUMN; if (_t){ straux = yytext; yylval.valor = (char*) strdup(yytext); return FLOAT32;}}
+"bool"      {if (_l) printf("BOOL\n"); flag = 0; COLUMN; if (_t){ straux = yytext; yylval.valor = (char*) strdup(yytext); return BOOL;}}
+"string"    {if (_l) printf("STRING\n"); flag = 0; COLUMN; if (_t){ straux = yytext; yylval.valor = (char*) strdup(yytext); return STRING;}}
+"fmt.Println"    {if (_l) printf("PRINT\n"); flag = 0; COLUMN; if (_t){ straux = yytext; yylval.valor = (char*) strdup(yytext); return PRINT;}}
+
+"strconv.Atoi"   {if (_l) printf("PARSEINT\n"); flag = 0; COLUMN; if (_t){ straux = yytext; yylval.no = novoNo("NULL", NULL, line, column - yyleng); return PARSEINT;}}
+
+"func"           {if (_l) printf("FUNC\n"); flag = 0; COLUMN; if (_t){ straux = yytext; yylval.valor = (char*) strdup(yytext); return FUNC;}}
+"os.Args"        {if (_l) printf("CMDARGS\n"); flag = 0; COLUMN; if (_t){ straux = yytext; yylval.valor = (char*) strdup(yytext); return CMDARGS;}}
+{RESERVED}       {if (_l) printf("RESERVED(%s)\n", yytext); flag = 0; COLUMN; if (_t){ straux = yytext; yylval.valor = (char*) strdup(yytext); return RESERVED;}}
+"_"         {if (_l) printf("BLANKID\n"); flag = 0; COLUMN; if (_t){ straux = yytext; yylval.valor = (char*) strdup(yytext); return BLANKID;}}
+
+{REALLIT}           {if (_l) printf("REALLIT(%s)\n", yytext); flag = 1; COLUMN; if (_t){ straux = yytext; yylval.valor = (char*) strdup(yytext); return REALLIT;}}
+{INTLIT}            {if (_l) printf("INTLIT(%s)\n", yytext); flag = 1; COLUMN; if (_t){ straux = yytext; yylval.valor = (char*) strdup(yytext); return INTLIT;}}
 {ILLEGAL_OCTAL}     {printf("Line %d, column %d: invalid octal constant (%s)\n", line, column, yytext); flag = 0; COLUMN;}
-{ID}                {if (_l) printf("ID(%s)\n", yytext); flag = 1; COLUMN; straux = yytext; free(yylval.valor); yylval.valor = (char*) strdup(yytext); if (_t) return ID;}
+{ID}                {if (_l) printf("ID(%s)\n", yytext); flag = 1; COLUMN; if (_t){ straux = yytext; yylval.valor = (char*) strdup(yytext); return ID;}}
 
-{STRLIT}     {flag = 1; if(_l == 1) printf("STRLIT(%s)\n",yytext); COLUMN; free(yylval.valor); yylval.valor = (char*)strdup(yytext); if(_t) return STRLIT;}
+{STRLIT}     {flag = 1; if(_l == 1) printf("STRLIT(%s)\n",yytext); COLUMN; yylval.valor = (char*) strdup(yytext); if(_t){ yylval.valor = (char*) strdup(yytext); return STRLIT;}}
 
 \"                                  {BEGIN STRLIT_ERROR; line_str = line; col_str = column; COLUMN; flag = 0;}
 <STRLIT_ERROR>\"                    {flag = 1; if(_l == 1) printf("STRLIT(%s)\n",yytext); COLUMN; BEGIN 0;}
@@ -109,8 +116,8 @@ RESERVED            break|default|interface|select|case|defer|go|map|struct|chan
 
 " "         {COLUMN; straux=yytext;}
 "\t"        {COLUMN; straux=yytext;}
-{NEWLINE}   {if(flag) {LINE; flag = 0; if (_l) printf("SEMICOLON\n"); straux = ""; free(yylval.valor); yylval.valor = (char*) strdup(yytext); if (_t) return SEMICOLON; } LINE;}
-<<EOF>>     {if(flag) {flag = 0; if (_l) printf("SEMICOLON\n"); if (_t) return SEMICOLON; } straux = ""; free(yylval.valor); yylval.valor = (char*) strdup("EOF"); return EOF;}
+{NEWLINE}   {LINE; if(flag) {flag = 0; if (_l) printf("SEMICOLON\n"); if (_t){ straux = ""; yylval.valor = (char*) strdup(yytext); return SEMICOLON; }}}
+<<EOF>>     {if(flag) {flag = 0; if (_l) printf("SEMICOLON\n"); if (_t) return SEMICOLON; } straux = ""; yylval.valor = (char*) strdup("EOF"); return EOF;}
 .           {flag = 0; printf("Line %d, column %d: illegal character (%s)\n", line, column, yytext); COLUMN;}
 
 %%
@@ -136,7 +143,7 @@ int main(int argc, char* argv[])
             yyparse();
             if (!syntaxError){
                 criaTabelas(root);
-                if(!semanticError || semanticError){
+                if(!semanticError){
                     printTabelas();
                     printAST(root,0);
                 }
