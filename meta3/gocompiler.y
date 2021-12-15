@@ -290,11 +290,11 @@ StatementSEMICOLON: StatementSEMICOLON Statement SEMICOLON      {$$=$1; addirmao
                   | Statement SEMICOLON                         {$$=$1;}
                   ;
 
-ParseArgs: IDaux COMMA BLANKID ASSIGN PARSEINT LPAR CMDARGS LSQ Expr RSQ RPAR  {$$=novoNo("ParseArgs", NULL, $5->line, $5->column);
+ParseArgs: IDaux COMMA BLANKID ASSIGN PARSEINT LPAR CMDARGS LSQ Expr RSQ RPAR  {$$=novoNo("ParseArgs", NULL, $5->line, $5->column); free($4);
                                                                                 addfilho($$, $1);
                                                                                 addirmao($1, $9);
                                                                                 }
-         | IDaux COMMA BLANKID ASSIGN PARSEINT LPAR error RPAR  {$$=novoNo("ParseArgs", NULL, line, column);
+         | IDaux COMMA BLANKID ASSIGN PARSEINT LPAR error RPAR  {$$=novoNo("ParseArgs", NULL, line, column); free($5); free($4);
                                                                 addfilho($$, $1);
                                                                 addirmao($1, novoNo("Error", NULL, line, column));
                                                                 }
