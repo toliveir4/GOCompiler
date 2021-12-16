@@ -1,4 +1,4 @@
-/*META 3 - COMPILADORES 2021-2022*/
+/*META 4 - COMPILADORES 2021-2022*/
 /*MARCO PAIS Nº 2019218981*/
 /*TIAGO OLIVEIRA Nº 2019219068*/
 
@@ -8,6 +8,7 @@
     #include <string.h>
     #include "struct.h"
     #include "semantics.h"
+    #include "code.h"
     #include "y.tab.h"
 
     #define LINE line++, column = 1;
@@ -155,6 +156,9 @@ int main(int argc, char* argv[])
             yyparse();
             if(!syntaxError){
                 criaTabelas(root);
+                if(!semanticError){
+                    geraCode(root);
+                }
             }
         }
     }
