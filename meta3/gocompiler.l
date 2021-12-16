@@ -149,7 +149,7 @@ int main(int argc, char* argv[])
         }
         // No flags
         else if (argc == 1) {
-            // Se não forem introduzidas flags a "-t" é escolhida
+            // Se não forem introduzidas flags só mostra os erros
             _t = 1;
             yyparse();
             criaTabelas(root);
