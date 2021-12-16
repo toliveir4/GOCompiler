@@ -143,7 +143,6 @@ int main(int argc, char* argv[])
             yyparse();
             if (!syntaxError){
                 criaTabelas(root);
-                printf("\n");
                 printTabelas();
                 printAST(root,0);
             }
