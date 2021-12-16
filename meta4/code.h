@@ -7,6 +7,6 @@
 
 #include "semantics.h"
 
-
+void geraCode(no_ast *atual);
 
 #endif

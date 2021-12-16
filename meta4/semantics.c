@@ -1110,7 +1110,7 @@ void addErro(char *s, int linha, int column)
     erros *aux = Err;
     while (aux->next)
     {
-        if (aux->next->linha > linha || (aux->next->linha == linha && aux->next->column <= column))
+        if (aux->next->linha > linha || (aux->next->linha == linha && aux->next->column >= column))
             break;
         aux = aux->next;
     }

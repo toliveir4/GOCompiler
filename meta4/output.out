@@ -12,5 +12,150 @@ Line 25, column 13: Cannot find symbol h(undef)
 Line 25, column 16: Operator + cannot be applied to types float32, int
 Line 32, column 11: Operator < cannot be applied to types int, undef
 Line 32, column 13: Cannot find symbol undeclared
-Line 39, column 11: Operator + cannot be applied to types int, float32
 Line 39, column 7: Operator = cannot be applied to types float32, undef
+Line 39, column 11: Operator + cannot be applied to types int, float32
+
+===== Global Symbol Table =====
+a		float32
+i		int
+f	()	none
+main	()	none
+undef	()	none
+types	()	none
+g	()	none
+h	(bool)	int
+
+===== Function f() Symbol Table =====
+return		none
+
+===== Function main() Symbol Table =====
+return		none
+x		int
+y		int
+b		bool
+
+===== Function undef() Symbol Table =====
+return		none
+
+===== Function types() Symbol Table =====
+return		none
+x		float32
+n		int
+
+===== Function g() Symbol Table =====
+return		none
+
+===== Function h(bool) Symbol Table =====
+return		int
+q		bool	param
+
+Program
+..VarDecl
+....Float32
+....Id(a)
+..VarDecl
+....Int
+....Id(i)
+..VarDecl
+....Bool
+....Id(i)
+..FuncDecl
+....FuncHeader
+......Id(f)
+......FuncParams
+....FuncBody
+......Call
+........Id(g) - ()
+......Call - undef
+........Id(h) - undef
+..FuncDecl
+....FuncHeader
+......Id(f)
+......FuncParams
+....FuncBody
+..FuncDecl
+....FuncHeader
+......Id(main)
+......FuncParams
+....FuncBody
+......VarDecl
+........Int
+........Id(x)
+......VarDecl
+........Int
+........Id(y)
+......VarDecl
+........Bool
+........Id(b)
+......Assign - bool
+........Id(b) - bool
+........And - bool
+..........IntLit(1) - int
+..........IntLit(1) - int
+......Assign - int
+........Id(i) - int
+........Add - int
+..........Id(i) - int
+..........IntLit(007) - int
+......Call - undef
+........Id(h) - undef
+......Call - int
+........Id(h) - (int)
+........Not - int
+..........Id(i) - int
+......Assign - int
+........Id(x) - int
+........RealLit(1.0) - float32
+......For
+........Id(x) - int
+........Block
+..........If
+............Id(x) - int
+............Block
+..............Call - undef
+................Id(h) - undef
+................Add - undef
+..................Id(a) - float32
+..................Id(x) - int
+..............Return
+............Block
+..FuncDecl
+....FuncHeader
+......Id(undef)
+......FuncParams
+....FuncBody
+......For
+........Lt - int
+..........IntLit(1) - int
+..........Id(undeclared) - undef
+........Block
+..FuncDecl
+....FuncHeader
+......Id(types)
+......FuncParams
+....FuncBody
+......VarDecl
+........Float32
+........Id(x)
+......VarDecl
+........Int
+........Id(n)
+......Assign - undef
+........Id(x) - float32
+........Add - undef
+..........Id(n) - int
+..........Id(x) - float32
+..FuncDecl
+....FuncHeader
+......Id(g)
+......FuncParams
+....FuncBody
+..FuncDecl
+....FuncHeader
+......Id(h)
+......Int
+......FuncParams
+........ParamDecl
+..........Bool
+..........Id(q)
+....FuncBody
