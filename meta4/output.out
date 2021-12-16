@@ -1,78 +1,166 @@
-Line 10, column 5: Symbol i already defined
-Line 12, column 17: Cannot find symbol h()
-Line 13, column 6: Symbol f already defined
-Line 16, column 12: Symbol y declared but never used
-Line 18, column 11: Operator && cannot be applied to types int, int
-Line 20, column 5: Cannot find symbol h()
-Line 21, column 7: Operator ! cannot be applied to type int
-Line 22, column 7: Operator = cannot be applied to types int, float32
-Line 23, column 9: Incompatible type int in for statement
-Line 24, column 12: Incompatible type int in if statement
-Line 25, column 13: Cannot find symbol h(undef)
-Line 25, column 16: Operator + cannot be applied to types float32, int
-Line 32, column 11: Operator < cannot be applied to types int, undef
-Line 32, column 13: Cannot find symbol undeclared
-Line 39, column 7: Operator = cannot be applied to types float32, undef
-Line 39, column 11: Operator + cannot be applied to types int, float32
-
+Line 4, column 40: Incompatible type int in return statement
+Line 10, column 9: Incompatible type int in return statement
+Line 21, column 6: Symbol a already defined
+Line 22, column 9: Incompatible type int in return statement
+Line 28, column 9: Symbol h declared but never used
+Line 30, column 2: Cannot find symbol f0(int,int,int,float32)
+Line 31, column 4: Operator = cannot be applied to types float32, undef
+Line 31, column 24: Operator + cannot be applied to types float32, undef
+Line 31, column 26: Cannot find symbol f0(int,int,float32,float32)
+Line 32, column 4: Operator = cannot be applied to types int, undef
+Line 32, column 6: Cannot find symbol func2(int,int,float32,float32)
+Line 33, column 10: Operator strconv.Atoi cannot be applied to types int, float32
+Line 34, column 4: Operator = cannot be applied to types int, undef
+Line 34, column 6: Cannot find symbol func2
+Line 35, column 7: Operator = cannot be applied to types float32, undef
+Line 35, column 9: Cannot find symbol func1(int,int,float32,undef)
+Line 35, column 57: Operator + cannot be applied to types int, float32
+Line 35, column 61: Operator + cannot be applied to types undef, float32
+Line 37, column 13: Operator strconv.Atoi cannot be applied to types int, undef
+Line 37, column 34: Cannot find symbol func1(bool)
+Line 39, column 7: Operator = cannot be applied to types int, float32
+Line 40, column 12: Operator > cannot be applied to types bool, bool
+Line 43, column 12: Operator > cannot be applied to types int, float32
+Line 44, column 13: Operator strconv.Atoi cannot be applied to types float32, string
+Line 46, column 4: Operator = cannot be applied to types int, bool
+Line 50, column 11: Operator && cannot be applied to types float32, bool
+Line 55, column 6: Operator = cannot be applied to types int, undef
+Line 55, column 8: Cannot find symbol func3()
+Line 56, column 10: Operator >= cannot be applied to types bool, bool
+Line 58, column 9: Incompatible type float32 in for statement
+Line 69, column 20: Incompatible type undef in fmt.Println statement
+Line 69, column 20: Cannot find symbol func_(int,int,float32)
+Line 76, column 4: Cannot find symbol noWhereToBeFound
+Line 76, column 21: Operator = cannot be applied to types undef, undef
+Line 76, column 23: Cannot find symbol noWhereToBeFound(bool,int,bool)
 ===== Global Symbol Table =====
-a		float32
-i		int
-f	()	none
+func__	(int,float32)	none
+func1	(int,int,float32,float32)	float32
+func2	(string)	int
+func3	(bool)	int
+func4	(int,float32,bool)	float32
 main	()	none
-undef	()	none
-types	()	none
-g	()	none
-h	(bool)	int
 
-===== Function f() Symbol Table =====
+===== Function func__(int,float32) Symbol Table =====
 return		none
+a		int	param
+b		float32	param
+
+===== Function func1(int,int,float32,float32) Symbol Table =====
+return		float32
+a		int	param
+b		int	param
+c		float32	param
+d		float32	param
+integer		int
+
+===== Function func2(string) Symbol Table =====
+return		int
+a		string	param
+
+===== Function func3(bool) Symbol Table =====
+return		int
+a		bool	param
+
+===== Function func4(int,float32,bool) Symbol Table =====
+return		float32
+a		int	param
+b		float32	param
+c		bool	param
 
 ===== Function main() Symbol Table =====
 return		none
-x		int
-y		int
-b		bool
-
-===== Function undef() Symbol Table =====
-return		none
-
-===== Function types() Symbol Table =====
-return		none
-x		float32
-n		int
-
-===== Function g() Symbol Table =====
-return		none
-
-===== Function h(bool) Symbol Table =====
-return		int
-q		bool	param
+a		int
+b		int
+c		int
+d		float32
+e		float32
+f		float32
+g		string
+h		string
+i		string
+j		bool
+k		bool
+l		bool
+toBe		bool
 
 Program
-..VarDecl
-....Float32
-....Id(a)
-..VarDecl
-....Int
-....Id(i)
-..VarDecl
-....Bool
-....Id(i)
 ..FuncDecl
 ....FuncHeader
-......Id(f)
+......Id(func__)
 ......FuncParams
+........ParamDecl
+..........Int
+..........Id(a)
+........ParamDecl
+..........Float32
+..........Id(b)
 ....FuncBody
-......Call
-........Id(g) - ()
-......Call - undef
-........Id(h) - undef
+......Return
+........IntLit(1) - int
 ..FuncDecl
 ....FuncHeader
-......Id(f)
+......Id(func1)
+......Float32
 ......FuncParams
+........ParamDecl
+..........Int
+..........Id(a)
+........ParamDecl
+..........Int
+..........Id(b)
+........ParamDecl
+..........Float32
+..........Id(c)
+........ParamDecl
+..........Float32
+..........Id(d)
 ....FuncBody
+......VarDecl
+........Int
+........Id(integer)
+......Return
+........Id(integer) - int
+..FuncDecl
+....FuncHeader
+......Id(func2)
+......Int
+......FuncParams
+........ParamDecl
+..........String
+..........Id(a)
+....FuncBody
+..FuncDecl
+....FuncHeader
+......Id(func3)
+......Int
+......FuncParams
+........ParamDecl
+..........Bool
+..........Id(a)
+....FuncBody
+......Return
+........IntLit(1) - int
+..FuncDecl
+....FuncHeader
+......Id(func4)
+......Float32
+......FuncParams
+........ParamDecl
+..........Int
+..........Id(a)
+........ParamDecl
+..........Float32
+..........Id(b)
+........ParamDecl
+..........Bool
+..........Id(c)
+....FuncBody
+......VarDecl
+........Float32
+........Id(a)
+......Return
+........Id(a) - int
 ..FuncDecl
 ....FuncHeader
 ......Id(main)
@@ -80,82 +168,272 @@ Program
 ....FuncBody
 ......VarDecl
 ........Int
-........Id(x)
+........Id(a)
 ......VarDecl
 ........Int
-........Id(y)
-......VarDecl
-........Bool
 ........Id(b)
-......Assign - bool
-........Id(b) - bool
-........And - bool
-..........IntLit(1) - int
-..........IntLit(1) - int
-......Assign - int
-........Id(i) - int
-........Add - int
-..........Id(i) - int
-..........IntLit(007) - int
-......Call - undef
-........Id(h) - undef
-......Call - int
-........Id(h) - (int)
-........Not - int
-..........Id(i) - int
-......Assign - int
-........Id(x) - int
-........RealLit(1.0) - float32
-......For
-........Id(x) - int
-........Block
-..........If
-............Id(x) - int
-............Block
-..............Call - undef
-................Id(h) - undef
-................Add - undef
-..................Id(a) - float32
-..................Id(x) - int
-..............Return
-............Block
-..FuncDecl
-....FuncHeader
-......Id(undef)
-......FuncParams
-....FuncBody
-......For
-........Lt - int
-..........IntLit(1) - int
-..........Id(undeclared) - undef
-........Block
-..FuncDecl
-....FuncHeader
-......Id(types)
-......FuncParams
-....FuncBody
+......VarDecl
+........Int
+........Id(c)
 ......VarDecl
 ........Float32
-........Id(x)
+........Id(d)
 ......VarDecl
-........Int
-........Id(n)
+........Float32
+........Id(e)
+......VarDecl
+........Float32
+........Id(f)
+......VarDecl
+........String
+........Id(g)
+......VarDecl
+........String
+........Id(h)
+......VarDecl
+........String
+........Id(i)
+......VarDecl
+........Bool
+........Id(j)
+......VarDecl
+........Bool
+........Id(k)
+......VarDecl
+........Bool
+........Id(l)
+......VarDecl
+........Bool
+........Id(toBe)
+......Call - undef
+........Id(f0) - undef
+........Id(a) - int
+........Id(b) - int
+........Id(c) - int
+........Id(d) - float32
 ......Assign - undef
-........Id(x) - float32
+........Id(d) - float32
 ........Add - undef
-..........Id(n) - int
-..........Id(x) - float32
-..FuncDecl
-....FuncHeader
-......Id(g)
-......FuncParams
-....FuncBody
-..FuncDecl
-....FuncHeader
-......Id(h)
-......Int
-......FuncParams
-........ParamDecl
-..........Bool
-..........Id(q)
-....FuncBody
+..........Call - float32
+............Id(func1) - (int,int,float32,float32)
+............Id(a) - int
+............Id(b) - int
+............Id(d) - float32
+............Id(e) - float32
+..........Call - undef
+............Id(f0) - undef
+............Id(a) - int
+............IntLit(1) - int
+............Id(d) - float32
+............RealLit(1.0) - float32
+......Assign - undef
+........Id(a) - int
+........Call - undef
+..........Id(func2) - undef
+..........IntLit(1) - int
+..........IntLit(1) - int
+..........RealLit(1.0) - float32
+..........RealLit(1.0) - float32
+......ParseArgs - undef
+........Id(a) - int
+........Call - float32
+..........Id(func1) - (int,int,float32,float32)
+..........Id(a) - int
+..........IntLit(123) - int
+..........RealLit(.1e1) - float32
+..........Id(f) - float32
+......Assign - undef
+........Id(a) - int
+........Id(func2) - undef
+......Assign - undef
+........Id(f) - float32
+........Call - undef
+..........Id(func1) - undef
+..........Call - int
+............Id(func2) - (string)
+............Id(g) - string
+..........Add - int
+............Add - int
+..............Id(a) - int
+..............Id(b) - int
+............Id(c) - int
+..........Call - float32
+............Id(func1) - (int,int,float32,float32)
+............Id(a) - int
+............Id(b) - int
+............Id(d) - float32
+............Id(e) - float32
+..........Add - undef
+............Add - undef
+..............Id(c) - int
+..............Id(e) - float32
+............Id(f) - float32
+......Print
+........Call - float32
+..........Id(func1) - (int,int,float32,float32)
+..........Call - int
+............Id(func2) - (string)
+............Id(g) - string
+..........Add - int
+............Add - int
+..............Id(a) - int
+..............Id(b) - int
+............Id(c) - int
+..........Call - float32
+............Id(func1) - (int,int,float32,float32)
+............Id(a) - int
+............Id(b) - int
+............Id(d) - float32
+............Id(e) - float32
+..........Add - float32
+............Add - float32
+..............Id(d) - float32
+..............Id(e) - float32
+............Id(f) - float32
+......ParseArgs - undef
+........Id(a) - int
+........Call - undef
+..........Id(func1) - undef
+..........Ge - bool
+............Id(a) - int
+............Id(b) - int
+......Assign - float32
+........Id(f) - float32
+........RealLit(1.1) - float32
+......Assign - int
+........Id(a) - int
+........RealLit(1.0) - float32
+......Call - int
+........Id(func3) - (bool)
+........Gt - bool
+..........Id(j) - bool
+..........Id(k) - bool
+......Call - int
+........Id(func3) - (bool)
+........Eq - bool
+..........Id(l) - bool
+..........Id(j) - bool
+......Print
+........Or - bool
+..........Id(j) - bool
+..........And - bool
+............Id(k) - bool
+............Id(l) - bool
+......Call - int
+........Id(func3) - (bool)
+........Gt - int
+..........Id(a) - int
+..........Id(f) - float32
+......ParseArgs - undef
+........Id(f) - float32
+........Id(i) - string
+......Call - int
+........Id(func3) - (bool)
+........Ge - bool
+..........Id(a) - int
+..........Id(c) - int
+......Assign - int
+........Id(a) - int
+........Eq - bool
+..........IntLit(12) - int
+..........IntLit(32) - int
+......Print
+........StrLit("((What a mess)) ") - string
+......Assign - bool
+........Id(j) - bool
+........Eq - bool
+..........IntLit(12) - int
+..........IntLit(32) - int
+......For
+........Block
+..........Call - int
+............Id(func3) - (bool)
+............And - bool
+..............Id(f) - float32
+..............Id(l) - bool
+..........Assign - int
+............Id(a) - int
+............Add - int
+..............Id(b) - int
+..............Id(c) - int
+..........For
+............Eq - bool
+..............Id(a) - int
+..............Id(c) - int
+............Block
+..............Call - int
+................Id(func3) - (bool)
+................Or - bool
+..................Id(j) - bool
+..................Not - bool
+....................Id(l) - bool
+..............Assign - float32
+................Id(d) - float32
+................Add - float32
+..................Id(e) - float32
+..................Id(f) - float32
+..............Assign - undef
+................Id(a) - int
+................Call - undef
+..................Id(func3) - undef
+..............For
+................Ge - bool
+..................Id(j) - bool
+..................Id(l) - bool
+................Block
+..................ParseArgs - int
+....................Id(a) - int
+....................Call - int
+......................Id(func3) - (bool)
+......................Ge - bool
+........................Id(a) - int
+........................Id(b) - int
+..................For
+....................Id(f) - float32
+....................Block
+......................If
+........................Id(l) - bool
+........................Block
+..........................Assign - float32
+............................Id(d) - float32
+............................Id(f) - float32
+........................Block
+..........................Assign - int
+............................Id(a) - int
+............................Id(a) - int
+..................For
+....................Or - bool
+......................Id(toBe) - bool
+......................Not - bool
+........................Id(toBe) - bool
+....................Block
+......................If
+........................Id(toBe) - bool
+........................Block
+........................Block
+..........................If
+............................Not - bool
+..............................Id(toBe) - bool
+............................Block
+..............................Print
+................................Call - undef
+..................................Id(func_) - undef
+..................................Id(a) - int
+..................................Id(c) - int
+..................................Id(e) - float32
+............................Block
+..............................Assign - bool
+................................Id(toBe) - bool
+................................Not - bool
+..................................Id(toBe) - bool
+..............Assign - undef
+................Id(noWhereToBeFound) - undef
+................Call - undef
+..................Id(noWhereToBeFound) - undef
+..................Eq - bool
+....................Id(a) - int
+....................Id(b) - int
+..................Id(c) - int
+..................Ge - bool
+....................Id(d) - float32
+....................Id(f) - float32
