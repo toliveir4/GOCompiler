@@ -152,7 +152,6 @@ int main(int argc, char* argv[])
     else {
         // Se não forem introduzidas flags só mostra os erros
         _t = 1;
-        printf("1");
         yyparse();
         criaTabelas(root);
     }
