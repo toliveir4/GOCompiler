@@ -674,12 +674,12 @@ char *anotaAst(no_ast *atual, globalTable *func)
 
     else if (strcmp(atual->tipo, "For") == 0)
     {
-        char *tipo = anotaAst(atual->filho, func);
+        char *tipo = NULL;
+        if(atual->filho)
+            tipo = anotaAst(atual->filho, func);
 
         if (strcmp(tipo, "undef") == 0)
-        {
             return "null";
-        }
 
         if (strcmp(tipo, "bool") != 0)
         {
