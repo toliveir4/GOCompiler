@@ -40,7 +40,7 @@
 %token<valor> RESERVED REALLIT INTLIT STRLIT ID
 
 /* regras */
-%type<no> RETURN PARSEINT FOR IF  DIV AND ASSIGN STAR MINUS MOD NOT OR PLUS GE GT EQ LE LT NE
+%type<no> RETURN PARSEINT FOR IF  DIV AND ASSIGN STAR MINUS MOD NOT OR PLUS GE GT EQ LE LT NE PRINT
 %type<no> Program 
 %type<no> Declarations DeclarationsAux
 %type<no> VarDeclaration VarSpec VarsAndStatements
@@ -269,17 +269,17 @@ Statement: IDaux ASSIGN Expr                                    {$$=novoNo("Assi
                                                                 addirmao($2, aux1);
                                                                 addfilho(aux1, $4);
                                                                 }
-         | RETURN                                               {$$=novoNo("Return", NULL, $1->line, column);}
-         | RETURN Expr                                          {$$=novoNo("Return", NULL, $1->line, column);
+         | RETURN                                               {$$=novoNo("Return", NULL, $1->line, $1->column);}
+         | RETURN Expr                                          {$$=novoNo("Return", NULL, $1->line, $1->column);
                                                                 addfilho($$, $2);
                                                                 }
          | FuncInvocation                                       {$$=novoNo("Call", NULL, line, column);
                                                                 addfilho($$, $1);
                                                                 }
          | ParseArgs                                            {$$=$1;}
-         | PRINT LPAR Expr RPAR                                 {$$=novoNo("Print", NULL, line, column);
+         | PRINT LPAR Expr RPAR                                 {$$=novoNo("Print", NULL, $1->line, $1->column);
                                                                 addfilho($$, $3);}
-         | PRINT LPAR STRLIT RPAR                               {$$=novoNo("Print", NULL, line, column);
+         | PRINT LPAR STRLIT RPAR                               {$$=novoNo("Print", NULL, $1->line, $1->column);
                                                                 aux1=novoNo("StrLit", $3, line, column - strlen($3));
                                                                 addfilho($$, aux1);
                                                                 }
