@@ -4,6 +4,6 @@ lex.yy.c
 y.output
 y.tab.c
 y.tab.h
-testes
+
 valgrind.txt
 output.out
