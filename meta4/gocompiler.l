@@ -153,11 +153,9 @@ int main(int argc, char* argv[])
             // Se não forem introduzidas flags a "-t" é escolhida
             _t = 1;
             yyparse();
-            if(!syntaxError){
-                criaTabelas(root);
-                if(!semanticError){
-                    geraCode(root);
-                }
+            criaTabelas(root);
+            if(!syntaxError && !semanticError){
+                geraCode(root);
             }
         }
     }
