@@ -148,15 +148,15 @@ int main(int argc, char* argv[])
                 printAST(root,0);
             }
         }
-        // No flags
-        else if (argc == 1) {
-            // Se não forem introduzidas flags só mostra os erros e gera o código
-            _t = 1;
-            yyparse();
-            criaTabelas(root);
-            if(!syntaxError && !semanticError){
-                geraCode(root);
-            }
+    }
+    // No flags
+    else {
+        // Se não forem introduzidas flags só mostra os erros e gera o código
+        _t = 1;
+        yyparse();
+        criaTabelas(root);
+        if(!syntaxError && !semanticError){
+            geraCode(root);
         }
     }
 

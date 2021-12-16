@@ -9,6 +9,10 @@ extern globalTable *Head; // cabeça das tabelas de símbolos
 void geraCode(no_ast *atual){
     globalTable *aux = Head;
 
+    // declara printf e atoi
+	printf("declare i32 @atoi(i8*)\n");
+	printf("declare i32 @printf(i8*, ...)\n");
+
     // primeiro adiciona as variáveis globais
     while(aux){
         if(!aux->func){
