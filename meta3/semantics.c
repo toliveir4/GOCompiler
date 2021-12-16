@@ -505,15 +505,17 @@ int checkLocalVarUsed(no_ast *atual, char *name)
 
 char *anotaAst(no_ast *atual, globalTable *func)
 {
-    if (strcmp(atual->tipo, "VarDecl") == 0)
+    if (strcmp(atual->tipo, "Print") == 0)
     {
-        return "null";
-    }
+        char *tipo = anotaAst(atual->filho, func);
 
-    else if (strcmp(atual->tipo, "Print") == 0)
-    {
-        anotaAst(atual->filho, func);
-        return "null";
+        if(strcmp(tipo, "undef") == 0){
+            char *str = (char *) malloc(516);
+            sprintf(str, "Line %d, column %d: Incompatible type undef in fmt.Println statement\n", atual->line, atual->column);
+            //printf("Line %d, column %d: Incompatible type undef in fmt.Println statement\n", atual->line, atual->column);
+            addErro(str, atual->line, atual->column);
+            semanticError = 1;
+        }
     }
 
     else if (strcmp(atual->tipo, "Assign") == 0)
@@ -674,12 +676,10 @@ char *anotaAst(no_ast *atual, globalTable *func)
 
     else if (strcmp(atual->tipo, "For") == 0)
     {
-        char *tipo = NULL;
-        if(atual->filho)
-            tipo = anotaAst(atual->filho, func);
+        char *tipo = anotaAst(atual->filho, func);
 
         if (strcmp(tipo, "undef") == 0)
-            return "null";
+            return "undef";
 
         if (strcmp(tipo, "bool") != 0)
         {
@@ -691,7 +691,8 @@ char *anotaAst(no_ast *atual, globalTable *func)
         }
 
         // chama o "Block" para anotar
-        anotaAst(atual->filho->irmao, func);
+        if(atual->filho->irmao)
+            anotaAst(atual->filho->irmao, func);
     }
 
     else if (strcmp(atual->tipo, "Call") == 0)
@@ -915,7 +916,7 @@ char *anotaAst(no_ast *atual, globalTable *func)
         return r;
     }
 
-    return "null";
+    return "undef";
 }
 
 char *addNotaId(no_ast *atual, globalTable *func)

@@ -12,7 +12,7 @@ exe: ${FILENAME1} ${FILENAME2} ${FILENAME3} ${FILENAME4} ${FILENAME5} ${FILENAME
 	lex ${FILENAME1}
 	yacc -y -d -t -v -Wno-yacc ${FILENAME2}
 	cc -o ${EXE} -ggdb3 y.tab.c lex.yy.c ${FILENAME3} ${FILENAME5} ${FILENAME7}
-	./${EXE} -s < testes_meta3/errors.dgo > output.out
+	./${EXE} -s < testes/errors.dgo > output.out
 clear:
 	rm -rf *${EXE}
 	rm -f ${EXE}.zip

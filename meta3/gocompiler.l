@@ -81,7 +81,7 @@ RESERVED            break|default|interface|select|case|defer|go|map|struct|chan
 "float32"   {if (_l) printf("FLOAT32\n"); flag = 0; COLUMN; if (_t){ straux = yytext; yylval.valor = (char*) strdup(yytext); return FLOAT32;}}
 "bool"      {if (_l) printf("BOOL\n"); flag = 0; COLUMN; if (_t){ straux = yytext; yylval.valor = (char*) strdup(yytext); return BOOL;}}
 "string"    {if (_l) printf("STRING\n"); flag = 0; COLUMN; if (_t){ straux = yytext; yylval.valor = (char*) strdup(yytext); return STRING;}}
-"fmt.Println"    {if (_l) printf("PRINT\n"); flag = 0; COLUMN; if (_t){ straux = yytext; yylval.valor = (char*) strdup(yytext); return PRINT;}}
+"fmt.Println"    {if (_l) printf("PRINT\n"); flag = 0; COLUMN; if (_t){ straux = yytext; yylval.no = novoNo("NULL", NULL, line, column + 1); return PRINT;}}
 
 "strconv.Atoi"   {if (_l) printf("PARSEINT\n"); flag = 0; COLUMN; if (_t){ straux = yytext; yylval.no = novoNo("NULL", NULL, line, column - yyleng); return PARSEINT;}}
 
