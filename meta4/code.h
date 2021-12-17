@@ -7,6 +7,12 @@
 
 #include "semantics.h"
 
-void geraCode(no_ast *atual);
+void geraCode();
+void geraFunc(globalTable *func);
+void geraFuncParams(funcParams *params);
+void geraFuncLocalVars(funcVars *vars);
+no_ast* getFuncNode(char *name, no_ast * atual);
+void geraOperacoes(no_ast* atual, globalTable *func);
+void printStr();
 
 #endif
