@@ -9,6 +9,7 @@
 
 void geraCode();
 void geraFunc(globalTable *func);
+void geraFuncHeader(globalTable *func);
 void geraFuncParams(funcParams *params);
 void geraFuncLocalVars(funcVars *vars);
 no_ast* getFuncNode(char *name, no_ast * atual);

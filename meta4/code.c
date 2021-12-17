@@ -45,6 +45,26 @@ void geraCode(){
 
 void geraFunc(globalTable *func){
     fvCounter = 1;
+    
+    geraFuncHeader(func);
+    geraFuncParams(func->params);
+    geraFuncLocalVars(func->vars);
+
+    no_ast *noAux = getFuncNode(func->name, root); // "FuncDecl" da função
+    if(noAux)
+        noAux = noAux->filho->irmao->filho; // primeiro statement da função
+    while(noAux){
+        if(strcmp(noAux->tipo, "VarDecl") != 0 && strcmp(noAux->tipo, "NULL") != 0){
+            geraOperacoes(noAux, func);
+            printf("\n");
+        }
+        noAux = noAux->irmao;
+    }
+
+    printf("}\n");
+}
+
+void geraFuncHeader(globalTable *func){
     printf("\ndefine ");
 
     // tipo de return
@@ -79,20 +99,6 @@ void geraFunc(globalTable *func){
         pAux = pAux->next;
     }
     printf(") {\n");
-
-    geraFuncParams(func->params);
-    geraFuncLocalVars(func->vars);
-
-    no_ast *noAux = getFuncNode(func->name, root); // "FuncDecl" da função
-    if(noAux)
-        noAux = noAux->filho->irmao->filho; // primeiro statement da função
-    while(noAux){
-        geraOperacoes(noAux, func);
-            printf("\n");
-        noAux = noAux->irmao;
-    }
-
-    printf("}\n");
 }
 
 void geraFuncParams(funcParams * params){
@@ -162,7 +168,9 @@ no_ast* getFuncNode(char *name, no_ast * atual){
 void geraOperacoes(no_ast* atual, globalTable *func){
     if(!atual)
         return;
-
+    
+    printf("\t%s %s %s\t", atual->tipo, atual->valor, atual->nota);
+    
     if(strcmp(atual->tipo, "Return") == 0){
         geraOperacoes(atual->filho, func);
 
@@ -181,7 +189,7 @@ void geraOperacoes(no_ast* atual, globalTable *func){
     
     else if(strcmp(atual->tipo, "IntLit") == 0){
         printf("\t%%%d = alloca i32\n", fvCounter);
-        printf("\tstore i32 %d, i32* %%%d\n", atoi(atual->valor), fvCounter);
+        printf("\tstore i32 @atoi(%s), i32* %%%d\n", atual->valor, fvCounter);
         fvCounter++;
     }
     
@@ -197,8 +205,30 @@ void geraOperacoes(no_ast* atual, globalTable *func){
         fvCounter++;
     }
     
-    else
-        geraOperacoes(atual->filho, func);
+    else if(strcmp(atual->tipo, "Id") == 0){
+        if(strcmp(atual->nota, "int")){
+            printf("\t%%%d = alloca i32\n", fvCounter);
+            printf("\tstore i32 @atoi(%s), i32* %%%d\n", atual->valor, fvCounter);
+            fvCounter++;
+        }
+        else if(strcmp(atual->nota, "float") == 0){
+            printf("\t%%%d = alloca double\n", fvCounter);
+            printf("\tstore double %.08f, double* %%%d\n", atof(atual->valor), fvCounter);
+            fvCounter++;
+        }
+        else if(strcmp(atual->nota, "bool")){
+            printf("\t%%%d = alloca i1\n", fvCounter);
+            printf("\tstore i1 %s, i1* %%%d\n", atual->valor, fvCounter);
+            fvCounter++;
+        }
+        else if(strcmp(atual->nota, "string") == 0){
+            printf("\t%%%d = alloca i8*\n", fvCounter);
+            printf("\tstore i8* %s, i8** %%%d\n", atual->valor, fvCounter);
+            fvCounter++;
+        }
+    }
+
+    geraOperacoes(atual->filho, func);
 }
 
 void printStr(){

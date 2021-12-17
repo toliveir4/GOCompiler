@@ -19,21 +19,21 @@ declare i32 @printf(i8*, ...)
 @sc = global i8*
 
 define void @fca() {
-
 }
 
 define i32 @fcb() {
 	%fafcb = alloca i32
 
+	Assign (null) int		Id fafcb int		%1 = alloca i1
+	store i1 fafcb, i1* %1
 
-
-
-	ret i32 %0
+	Return (null) (null)		Id fafcb int		%2 = alloca i1
+	store i1 fafcb, i1* %2
+	ret i32 %2
 }
 
 define double @fcd() {
-
-	%1 = alloca double
+	Return (null) (null)		Add (null) float32		RealLit .1e1 float32		%1 = alloca double
 	store double 1.00000000, double* %1
 	ret double %1
 }
@@ -41,17 +41,17 @@ define double @fcd() {
 define i8* @fce() {
 	%strfce = alloca i8*
 
-
-
-	ret i8* %0
+	Return (null) (null)		Id strfce string		%1 = alloca i32
+	store i32 @atoi(strfce), i32* %1
+	ret i8* %1
 }
 
 define i1 @fcf() {
 	%bafcf = alloca i1
 
-
-
-	ret i1 %0
+	Return (null) (null)		Id bafcf bool		%1 = alloca i32
+	store i32 @atoi(bafcf), i32* %1
+	ret i1 %1
 }
 
 define i32 @fcg(i32 %iafcg, double %fafcg) {
@@ -60,9 +60,12 @@ define i32 @fcg(i32 %iafcg, double %fafcg) {
 	%2 = alloca double
 	store double %fafcg, double* %2
 
+	If (null) (null)		Gt (null) bool		Call (null) float32		Id fcd ()		%3 = alloca i32
+	store i32 @atoi(fcd), i32* %3
 
-
-	ret i32 %2
+	Return (null) (null)		Call (null) int		Id fcb ()		%4 = alloca i32
+	store i32 @atoi(fcb), i32* %4
+	ret i32 %4
 }
 
 define double @fch(i32 %iafch, double %fafch, i8* %safch) {
@@ -73,13 +76,18 @@ define double @fch(i32 %iafch, double %fafch, i8* %safch) {
 	%3 = alloca i8*
 	store i8* %safch, i1* %3
 
+	Call (null) int		Id fcg (int,float32)		%4 = alloca i32
+	store i32 @atoi(fcg), i32* %4
 
+	Print (null) (null)		Id safch string		%5 = alloca i32
+	store i32 @atoi(safch), i32* %5
 
+	If (null) (null)		Id bb bool		%6 = alloca i32
+	store i32 @atoi(bb), i32* %6
 
-
-	%4 = alloca double
-	store double 0.01000000, double* %4
-	ret double %4
+	Return (null) (null)		RealLit .01 float32		%7 = alloca double
+	store double 0.01000000, double* %7
+	ret double %7
 }
 
 define double @fci(i32 %iafci, i32 %ibfci, double %fafci, double %fbfci, i8* %safci) {
@@ -94,9 +102,14 @@ define double @fci(i32 %iafci, i32 %ibfci, double %fafci, double %fbfci, i8* %sa
 	%5 = alloca i8*
 	store i8* %safci, i1* %5
 
+	Call (null) float32		Id fch (int,float32,string)		%6 = alloca i32
+	store i32 @atoi(fch), i32* %6
 
+	Assign (null) int		Id iafci int		%7 = alloca i1
+	store i1 iafci, i1* %7
 
-
+	If (null) (null)		Call (null) bool		Id fcf ()		%8 = alloca i32
+	store i32 @atoi(fcf), i32* %8
 
 }
 
@@ -115,35 +128,59 @@ define i32 @fcj(i32 %iafcj, i32 %ibfcj, double %fafcj, double %fbfcj, i1 %bafcj)
 	%fcjia = alloca i32
 	%fcjib = alloca i32
 
+	Assign (null) int		Id fcjia int		%6 = alloca i1
+	store i1 fcjia, i1* %6
 
+	If (null) (null)		Gt (null) bool		Id fcjia int		%7 = alloca i1
+	store i1 fcjia, i1* %7
 
+	For (null) (null)		Id bb bool		%8 = alloca i32
+	store i32 @atoi(bb), i32* %8
 
-
-
-
-	%6 = alloca i32
-	store i32 101, i32* %6
-	ret i32 %6
+	Return (null) (null)		Minus (null) int		IntLit 101 int		%9 = alloca i32
+	store i32 @atoi(101), i32* %9
+	ret i32 %9
 }
 
 define void @main() {
 	%mia = alloca i32
 	%mib = alloca i32
 
+	Assign (null) int		Id ia int		%1 = alloca i1
+	store i1 ia, i1* %1
 
+	Assign (null) int		Id ib int		%2 = alloca i1
+	store i1 ib, i1* %2
 
+	Assign (null) int		Id ic int		%3 = alloca i1
+	store i1 ic, i1* %3
 
+	Assign (null) int		Id id int		%4 = alloca i1
+	store i1 id, i1* %4
 
+	Assign (null) int		Id ie int		%5 = alloca i1
+	store i1 ie, i1* %5
 
+	Assign (null) float32		Id fa float32		%6 = alloca i32
+	store i32 @atoi(fa), i32* %6
 
+	Assign (null) float32		Id fb float32		%7 = alloca i32
+	store i32 @atoi(fb), i32* %7
 
+	Assign (null) float32		Id fc float32		%8 = alloca i32
+	store i32 @atoi(fc), i32* %8
 
+	Assign (null) float32		Id fd float32		%9 = alloca i32
+	store i32 @atoi(fd), i32* %9
 
+	Assign (null) float32		Id fe float32		%10 = alloca i32
+	store i32 @atoi(fe), i32* %10
 
+	For (null) (null)		And (null) bool		Gt (null) bool		Id ia int		%11 = alloca i1
+	store i1 ia, i1* %11
 
-
-
-
+	Assign (null) int		Id mia int		%12 = alloca i1
+	store i1 mia, i1* %12
 
 }
 Program
