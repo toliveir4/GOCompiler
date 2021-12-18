@@ -7,30 +7,36 @@ define i32 @factorial(i32) {
 	%n = alloca i32
 	store i32 %0, i32* %n
 
-	%1 = load i32, i32* %0
-	%2 = icmp eq i32 %1, 0
-	br i1 %2, label %3, label %4
+	%2 = load i32, i32* %n
+	%3 = alloca i32
+	store i32 0, i32* %3
+	%4 = load i32, i32* %3
+	%5 = icmp eq i32 %2, %4
+	%6 = icmp eq i1 %5, 0
+	br i1 %6, label %100, label %101
 
-	<label>:%3:
-	%5 = alloca i32
-	store i32 1, i32* %5
-	ret i32 %5
-
-	<label>:%4:
-	%6 = load i32, i32* %n
-	%7 = load i32, i32* %n
+;	<label>:100:		; preds = %1
 	%8 = alloca i32
 	store i32 1, i32* %8
-	%9 = load i32, i32* %7
-	%10 = load i32, i32* %8
-	%11 = sub nsw i32 %10, %9
-	store i32 %11, i32* %12
-	%13 = call i32 @factorial(i32 %7)
-	%14 = load i32, i32* %6
-	%15 = load i32, i32* %13
-	%16 = mul nsw i32 %15, %14
-	store i32 %16, i32* %17
-	ret i32 %17
+	%9 = load i32, i32* %8
+
+	br label %102
+
+;	<label>:101:		; preds = %1
+	%11 = load i32, i32* %n
+	%12 = load i32, i32* %n
+	%13 = alloca i32
+	store i32 1, i32* %13
+	%14 = load i32, i32* %13
+	%15 = sub nsw i32 %12, %14
+	%16 = call i32 @factorial(i32 %15)
+	%17 = mul nsw i32 %11, %15
+	br label %102
+
+;	<label>:102:		; preds = false, true
+	%19 = load i32, i32* %8
+	ret i32 %19
+
 }
 
 define i32 @main(i32, i8**) {

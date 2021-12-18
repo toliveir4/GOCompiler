@@ -13,7 +13,7 @@ void geraFuncHeader(globalTable *func);
 void geraFuncParams(globalTable *func);
 void geraFuncLocalVars(globalTable *func);
 no_ast* getFuncNode(char *name, no_ast * atual);
-void geraOperacoes(no_ast* atual, globalTable *func);
+void geraOperacoes(no_ast* atual, globalTable *func, int ret);
 void printStr();
 
 #endif
