@@ -10,8 +10,8 @@
 void geraCode();
 void geraFunc(globalTable *func);
 void geraFuncHeader(globalTable *func);
-void geraFuncParams(funcParams *params);
-void geraFuncLocalVars(funcVars *vars);
+void geraFuncParams(globalTable *func);
+void geraFuncLocalVars(globalTable *func);
 no_ast* getFuncNode(char *name, no_ast * atual);
 void geraOperacoes(no_ast* atual, globalTable *func);
 void printStr();
