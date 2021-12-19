@@ -7,35 +7,38 @@ define i32 @factorial(i32) {
 	%n = alloca i32
 	store i32 %0, i32* %n
 
+	%return = alloca i32
 	%2 = load i32, i32* %n
 	%3 = alloca i32
 	store i32 0, i32* %3
 	%4 = load i32, i32* %3
 	%5 = icmp eq i32 %2, %4
-	%6 = icmp eq i1 %5, 0
-	br i1 %6, label %100, label %101
+	%6 = icmp eq i1 %5, 1
+	br i1 %6, label %btrue, label %bfalse
 
-;	<label>:100:		; preds = %1
-	%8 = alloca i32
-	store i32 1, i32* %8
-	%9 = load i32, i32* %8
+btrue:
+	%7 = alloca i32
+	store i32 1, i32* %7
+	%8 = load i32, i32* %7
 
-	br label %102
+	store i32 %8, i32* %return
+	br label %end
 
-;	<label>:101:		; preds = %1
-	%11 = load i32, i32* %n
-	%12 = load i32, i32* %n
-	%13 = alloca i32
-	store i32 1, i32* %13
-	%14 = load i32, i32* %13
-	%15 = sub nsw i32 %12, %14
-	%16 = call i32 @factorial(i32 %15)
-	%17 = mul nsw i32 %11, %15
-	br label %102
+bfalse:
+	%9 = load i32, i32* %n
+	%10 = load i32, i32* %n
+	%11 = alloca i32
+	store i32 1, i32* %11
+	%12 = load i32, i32* %11
+	%13 = sub nsw i32 %10, %12
+	%14 = call i32 @factorial(i32 %13)
+	%15 = mul nsw i32 %9, %14
+	store i32 %15, i32* %return
+	br label %end
 
-;	<label>:102:		; preds = false, true
-	%19 = load i32, i32* %8
-	ret i32 %19
+end:			; preds = bfalse, btrue
+	%16 = load i32, i32* %return
+	ret i32 %16
 
 }
 
@@ -47,10 +50,11 @@ define i32 @main(i32, i8**) {
 
 	%argument = alloca i32
 
-	%2 = load i8**, i8*** %argv
-	%3 = getelementptr inbounds i8*, i8** %2, i64 1
-	%4 = load i8*, i8** %3
-	%5 = call i32 @atoi(i8* %4)
+	%return = alloca i32
+	%3 = load i8**, i8*** %argv
+	%4 = getelementptr inbounds i8*, i8** %3, i64 1
+	%5 = load i8*, i8** %4
+	%6 = call i32 @atoi(i8* %5)
 	store i32 %6, i32* %argument
 
 	%7 = load i32, i32* %argument

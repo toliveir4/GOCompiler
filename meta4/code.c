@@ -118,7 +118,7 @@ void geraFuncParams(globalTable *func){
     if(strcmp(func->name, "main") == 0){
         printf("\t%%argc = alloca i32\n\tstore i32 %%0, i32* %%argc\n");
         printf("\t%%argv = alloca i8**\n\tstore i8** %%1, i8*** %%argv\n\n");
-        fvCounter = 2;
+        fvCounter = 3;
         return;
     }
 
@@ -169,6 +169,7 @@ void geraFuncLocalVars(globalTable *func){
             printf("\n");
         vars = vars->next;
     }
+    printf("\t%%return = alloca i32\n");
 }
 
 no_ast* getFuncNode(char *name, no_ast * atual){
@@ -215,7 +216,6 @@ void geraOperacoes(no_ast* atual, globalTable *func, int ret){
         printf("\t%%%d = load i8*, i8** %%%d\n", fvCounter, fvCounter - 1);
         fvCounter++;
         printf("\t%%%d = call i32 @atoi(i8* %%%d)\n", fvCounter, fvCounter - 1);
-        fvCounter++;
         printf("\tstore i32 %%%d, i32* %%%s\n", fvCounter, atual->filho->valor);
         fvCounter++;
     }
@@ -320,28 +320,27 @@ void geraOperacoes(no_ast* atual, globalTable *func, int ret){
     if(strcmp(atual->tipo, "If") == 0){
         geraOperacoes(atual->filho, func, 1);
 
-        printf("\t%%%d = icmp eq i1 %%%d, 0\n", fvCounter, fvCounter - 1);
+        printf("\t%%%d = icmp eq i1 %%%d, 1\n", fvCounter, fvCounter - 1);
         fvCounter++;
-        printf("\tbr i1 %%%d, label %%100, label %%101\n", fvCounter - 1);
-        fvCounter++;
+        printf("\tbr i1 %%%d, label %%btrue, label %%bfalse\n", fvCounter - 1);
 
         // if true
-        printf("\n;\t<label>:100:\t\t; preds = %%%d\n", 1);
+        printf("\nbtrue:\n");
         // cria o código do "Block" do If
         geraOperacoes(atual->filho->irmao, func, 1);
-        int aux = fvCounter;
-        printf("\tbr label %%102\n");
-        fvCounter++;
+        printf("\tstore i32 %%%d, i32* %%return\n", fvCounter - 1);
+        printf("\tbr label %%end\n");
 
         // if false
-        printf("\n;\t<label>:101:\t\t; preds = %%%d\n", 1);
+        printf("\nbfalse:\n");
         geraOperacoes(atual->irmao, func, 1);
-        printf("\tbr label %%102\n");
-        fvCounter++;
+        printf("\tstore i32 %%%d, i32* %%return\n", fvCounter - 2);
+        printf("\tbr label %%end\n");
 
         // return
-        printf("\n;\t<label>:102:\t\t; preds = false, true\n");
-        printf("\t%%%d = load i32, i32* %%%d\n", fvCounter, aux - 2);
+        fvCounter--;
+        printf("\nend:\t\t\t; preds = bfalse, btrue\n");
+        printf("\t%%%d = load i32, i32* %%return\n", fvCounter);
         fvCounter++;
         printf("\tret i32 %%%d\n", fvCounter - 1);
     }
@@ -366,12 +365,13 @@ void geraOperacoes(no_ast* atual, globalTable *func, int ret){
             geraOperacoes(atual->filho->irmao, func, ret);
 
             if(strcmp(atual->filho->nota, "int") == 0){
-                printf("\t%%%d = mul nsw i32 %%%d, %%%d\n", fvCounter, aux - 1, fvCounter - 2);
+                printf("\t%%%d = mul nsw i32 %%%d, %%%d\n", fvCounter, aux - 1, fvCounter - 1);
+                fvCounter++;
             }
             else if(strcmp(atual->filho->nota, "float32") == 0){
                 printf("\t%%%d = load double, double* %%%d\n\t%%%d = load double, double* %%%d\n", fvCounter, aux - 1, fvCounter + 1, fvCounter - 1);
                 fvCounter += 2;
-                printf("\t%%%d = fmul nsw double %%%d, %%%d\n", fvCounter, fvCounter - 1, fvCounter - 2);
+                printf("\t%%%d = fmul nsw double %%%d, %%%d\n", fvCounter, fvCounter - 1, fvCounter - 1);
                 fvCounter++;
                 printf("\tstore double %%%d, double* %%%d\n", fvCounter - 1, fvCounter);
             }
