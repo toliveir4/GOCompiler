@@ -26,13 +26,13 @@ void geraCode(){
                 flag = 1;
             }   
             if(strcmp(aux->type, "int") == 0)
-                printf("@%s = global i32\n", aux->name);
+                printf("@%s = common global i32 0\n", aux->name);
             else if(strcmp(aux->type, "float32") == 0)
-                printf("@%s = global double\n", aux->name);
+                printf("@%s = common global double 0.000000e+00\n", aux->name);
             else if(strcmp(aux->type, "bool") == 0)
-                printf("@%s = global i1\n", aux->name);
+                printf("@%s = common global i1 0\n", aux->name);
             else if(strcmp(aux->type, "string") == 0)
-                printf("@%s = global i8*\n", aux->name);
+                printf("@%s = common global i8* null\n", aux->name);
         }
         aux = aux->next;
     }
@@ -201,7 +201,7 @@ void geraOperacoes(no_ast* atual, globalTable *func, int ret){
         if(strcmp(atual->nota, "int") == 0)
             printf("\tstore i32 %%%d, i32* %%%s\n", fvCounter - 1, atual->filho->valor);
         else if(strcmp(atual->nota, "float32") == 0)
-            printf("\tstore double %%%d, double %%%s\n", fvCounter - 1, atual->filho->valor);
+            printf("\tstore double %%%d, double* %%%s\n", fvCounter - 1, atual->filho->valor);
         else if(strcmp(atual->nota, "bool") == 0)
             printf("\tstore i1 %%%d, i1* %%%s\n", fvCounter - 1, atual->filho->valor);
         else if(strcmp(atual->nota, "string") == 0)
@@ -349,7 +349,6 @@ void geraOperacoes(no_ast* atual, globalTable *func, int ret){
         no_ast *aux = atual->filho;
         while(aux){
             geraOperacoes(aux, func, ret);
-            printf("\n");
             aux = aux->irmao;
         }
     }
@@ -369,18 +368,12 @@ void geraOperacoes(no_ast* atual, globalTable *func, int ret){
                 fvCounter++;
             }
             else if(strcmp(atual->filho->nota, "float32") == 0){
-                printf("\t%%%d = load double, double* %%%d\n\t%%%d = load double, double* %%%d\n", fvCounter, aux - 1, fvCounter + 1, fvCounter - 1);
-                fvCounter += 2;
-                printf("\t%%%d = fmul nsw double %%%d, %%%d\n", fvCounter, fvCounter - 1, fvCounter - 1);
+                printf("\t%%%d = fmul nsw double %%%d, %%%d\n", fvCounter, aux - 1, fvCounter - 1);
                 fvCounter++;
-                printf("\tstore double %%%d, double* %%%d\n", fvCounter - 1, fvCounter);
             }
             else if(strcmp(atual->filho->nota, "string") == 0){
-                printf("\t%%%d = load i8*, i8** %%%d\n\t%%%d = load i8*, i8** %%%d\n", fvCounter, aux - 1, fvCounter + 1, fvCounter - 1);
-                fvCounter += 2;
-                printf("\t%%%d = mul nsw i8* %%%d, %%%d\n", fvCounter, fvCounter - 1, fvCounter - 2);
+                printf("\t%%%d = mul nsw i8* %%%d, %%%d\n", fvCounter, aux - 1, fvCounter - 1);
                 fvCounter++;
-                printf("\tstore i8* %%%d, i8** %%%d\n", fvCounter - 1, fvCounter);
             }
             fvCounter++;
         }
@@ -394,18 +387,10 @@ void geraOperacoes(no_ast* atual, globalTable *func, int ret){
                 printf("\t%%%d = sub nsw i32 %%%d, %%%d\n", fvCounter, aux - 1, fvCounter - 1);
             }
             else if(strcmp(atual->filho->nota, "float32") == 0){
-                printf("\t%%%d = load double, double* %%%d\n\t%%%d = load double, double* %%%d\n", fvCounter, aux - 1, fvCounter + 1, fvCounter - 1);
-                fvCounter += 2;
-                printf("\t%%%d = sub nsw double %%%d, %%%d\n", fvCounter, fvCounter - 1, fvCounter - 2);
-                fvCounter++;
-                printf("\tstore double %%%d, double* %%%d\n", fvCounter - 1, fvCounter);
+                printf("\t%%%d = fsub nsw double %%%d, %%%d\n", fvCounter, aux - 1, fvCounter - 1);
             }
             else if(strcmp(atual->filho->nota, "string") == 0){
-                printf("\t%%%d = load i8*, i8** %%%d\n\t%%%d = load i8*, i8** %%%d\n", fvCounter, aux - 1, fvCounter + 1, fvCounter - 1);
-                fvCounter += 2;
-                printf("\t%%%d = sub nsw i8* %%%d, %%%d\n", fvCounter, fvCounter - 1, fvCounter - 2);
-                fvCounter++;
-                printf("\tstore i8* %%%d, i8** %%%d\n", fvCounter - 1, fvCounter);
+                printf("\t%%%d = sub nsw i8* %%%d, %%%d\n", fvCounter, aux - 1, fvCounter - 1);
             }
             fvCounter++;
         }
@@ -421,10 +406,10 @@ void geraOperacoes(no_ast* atual, globalTable *func, int ret){
                 printf("\t%%%d = icmp eq i32 %%%d, %%%d\n", fvCounter, aux - 1, fvCounter - 1);
             }
             else if(strcmp(atual->filho->nota, "float32") == 0){
-                printf("\t%%%d = icmp eq double %%%d, %%%d\n", fvCounter, fvCounter - 1, fvCounter - 2);
+                printf("\t%%%d = icmp eq double %%%d, %%%d\n", fvCounter, aux - 1, fvCounter - 1);
             }
             else if(strcmp(atual->filho->nota, "string") == 0){
-                printf("\t%%%d = icmp eq i8* %%%d, %%%d\n", fvCounter, fvCounter - 1, fvCounter - 2);
+                printf("\t%%%d = icmp eq i8* %%%d, %%%d\n", fvCounter, aux - 1, fvCounter - 1);
             }
             fvCounter++;
         }
@@ -440,13 +425,15 @@ void geraOperacoes(no_ast* atual, globalTable *func, int ret){
     if(strcmp(atual->tipo, "RealLit") == 0){
         printf("\t%%%d = alloca double\n", fvCounter);
         printf("\tstore double %.08f, double* %%%d\n", atof(atual->valor), fvCounter);
-        fvCounter++;
+        printf("\t%%%d = load double, double* %%%d\n", fvCounter + 1, fvCounter);
+        fvCounter += 2;
     }
 
     if(strcmp(atual->tipo, "StrLit") == 0){
         printf("\t%%%d = alloca i8*\n", fvCounter);
         printf("\tstore i8* %s, i8** %%%d\n", atual->valor, fvCounter);
-        fvCounter++;
+        printf("\t%%%d = load i8*, i8** %%%d\n", fvCounter + 1, fvCounter);
+        fvCounter += 2;
     }
 
     if(strcmp(atual->tipo, "Id") == 0){

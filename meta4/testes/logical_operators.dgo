@@ -24,7 +24,7 @@ func main () {
 
     b = b && b;
     b = b == b;
-
+    /*
     i = i + i;
     i = i / i;
 
@@ -37,5 +37,5 @@ func main () {
     f = +f;
 
     fmt.Println(s);
-    i,_ = strconv.Atoi(os.Args[1]);
+    i,_ = strconv.Atoi(os.Args[1]);*/
 }

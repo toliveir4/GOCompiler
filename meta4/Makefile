@@ -7,12 +7,13 @@ FILENAME5 = semantics.c
 FILENAME6 = semantics.h
 FILENAME7 = code.c
 FILENAME8 = code.h
+FILENAME9 = logical_operators
 
 exe: ${FILENAME1} ${FILENAME2} ${FILENAME3} ${FILENAME4} ${FILENAME5} ${FILENAME6} ${FILENAME7} ${FILENAME8}
 	lex ${FILENAME1}
 	yacc -y -d -t -v -Wno-yacc ${FILENAME2}
 	cc -o ${EXE} -ggdb3 y.tab.c lex.yy.c ${FILENAME3} ${FILENAME5} ${FILENAME7}
-	./${EXE} < testes/factorial.dgo > factorial.ll
+	./${EXE} < testes/${FILENAME9}.dgo > ${FILENAME9}.ll
 clear:
 	rm -rf *${EXE}
 	rm -f ${EXE}.zip

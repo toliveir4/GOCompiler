@@ -20,7 +20,6 @@ btrue:
 	%7 = alloca i32
 	store i32 1, i32* %7
 	%8 = load i32, i32* %7
-
 	store i32 %8, i32* %return
 	br label %end
 
